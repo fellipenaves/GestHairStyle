@@ -74,6 +74,38 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
+        .form-excluir {
+            display: inline;
+        }
+
+        .botao-excluir {
+            margin-left: 10px;
+            padding: 0;
+            border: none;
+            background: none;
+            color: #c0392b;
+            font: inherit;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .aviso {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 5px;
+        }
+
+        .aviso-sucesso {
+            color: #155724;
+            background-color: #d4edda;
+        }
+
+        .aviso-erro {
+            color: #721c24;
+            background-color: #f8d7da;
+        }
+
     </style>
 </head>
 
@@ -81,6 +113,20 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="container">
     <h1>GestHairStyle</h1>
+
+    <?php if (($_GET['status'] ?? '') === 'excluido'): ?>
+    <div class="aviso aviso-sucesso">
+        Cliente excluído com sucesso!
+    </div>
+    <?php elseif (($_GET['status'] ?? '') === 'cliente_em_uso'): ?>
+    <div class="aviso aviso-erro">
+        Este cliente possui agendamentos e não pode ser excluído.
+    </div>
+    <?php elseif (isset($_GET['status'])): ?>
+    <div class="aviso aviso-erro">
+        Não foi possível excluir o cliente.
+    </div>
+    <?php endif; ?>
 
     <p>Conexão com o banco realizada com sucesso!</p>
 
@@ -96,6 +142,7 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
                 <th>Código</th>
                 <th>Nome</th>
                 <th>Telefone</th>
+                <th>Ações</th>
             </tr>
         </thead>
 
@@ -105,6 +152,27 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($cliente['cli_id']) ?></td>
                     <td><?= htmlspecialchars($cliente['cli_nome']) ?></td>
                     <td><?= htmlspecialchars($cliente['cli_telefone'] ?? '') ?></td>
+                    <td>
+                        <a href="editar_cliente.php?id=<?= (int) $cliente['cli_id'] ?>">
+                            Editar
+                        </a>
+                        <form
+                            action="excluir_cliente.php"
+                            method="POST"
+                            class="form-excluir"
+                            onsubmit="return confirm('Deseja realmente excluir este cliente?');"
+                        >
+                            <input
+                                type="hidden"
+                                name="id"
+                                value="<?= (int) $cliente['cli_id'] ?>"
+                            >
+
+                            <button type="submit" class="botao-excluir">
+                                Excluir
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
