@@ -26,6 +26,20 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
             color: #222;
         }
 
+        .botao-cadastro {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 12px 18px;
+            border-radius: 5px;
+            background-color: #17202a;
+            color: white;
+            text-decoration: none;
+        }
+
+        .botao-cadastro:hover {
+            background-color: #2c3e50;
+        }
+
         .container {
             max-width: 900px;
             margin: auto;
@@ -69,6 +83,10 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
     <h1>GestHairStyle</h1>
 
     <p>Conexão com o banco realizada com sucesso!</p>
+
+    <a class="botao-cadastro" href="cadastrar_cliente.php">
+        Cadastrar novo cliente
+    </a>
 
     <h2>Clientes cadastrados</h2>
 
