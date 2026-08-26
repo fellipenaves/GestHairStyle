@@ -115,23 +115,27 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
     <h1>GestHairStyle</h1>
 
     <?php if (($_GET['status'] ?? '') === 'excluido'): ?>
-    <div class="aviso aviso-sucesso">
-        Cliente excluído com sucesso!
-    </div>
+        <div class="aviso aviso-sucesso">
+            Cliente excluído com sucesso!
+        </div>
     <?php elseif (($_GET['status'] ?? '') === 'cliente_em_uso'): ?>
-    <div class="aviso aviso-erro">
-        Este cliente possui agendamentos e não pode ser excluído.
-    </div>
+        <div class="aviso aviso-erro">
+            Este cliente possui agendamentos e não pode ser excluído.
+        </div>
     <?php elseif (isset($_GET['status'])): ?>
-    <div class="aviso aviso-erro">
-        Não foi possível excluir o cliente.
-    </div>
+        <div class="aviso aviso-erro">
+            Não foi possível excluir o cliente.
+        </div>
     <?php endif; ?>
 
     <p>Conexão com o banco realizada com sucesso!</p>
 
     <a class="botao-cadastro" href="cadastrar_cliente.php">
         Cadastrar novo cliente
+    </a>
+
+    <a class="botao-cadastro" href="agendamentos.php">
+        Ver agendamentos
     </a>
 
     <h2>Clientes cadastrados</h2>
