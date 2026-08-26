@@ -151,6 +151,39 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
             background-color: #d4edda;
         }
 
+        .form-status {
+            display: flex;
+            gap: 6px;
+        }
+
+        .form-status select {
+            padding: 7px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .form-status button {
+            padding: 7px 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #17202a;
+            color: white;
+            cursor: pointer;
+        }
+
+        .form-status button:hover {
+            background-color: #2c3e50;
+        }
+
+        .mensagem-erro {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 5px;
+            color: #721c24;
+            background-color: #f8d7da;
+        }
+
     </style>
 </head>
 
@@ -162,6 +195,16 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
     <?php if (($_GET['status'] ?? '') === 'criado'): ?>
         <div class="mensagem-sucesso">
             Agendamento criado com sucesso!
+        </div>
+
+    <?php elseif (($_GET['status'] ?? '') === 'atualizado'): ?>
+        <div class="mensagem-sucesso">
+            Status atualizado com sucesso!
+        </div>
+
+    <?php elseif (isset($_GET['status'])): ?>
+        <div class="mensagem-erro">
+            Não foi possível atualizar o status.
         </div>
     <?php endif; ?>
 
@@ -183,6 +226,7 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
                     <th>Serviço</th>
                     <th>Preço</th>
                     <th>Status</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
 
@@ -232,12 +276,51 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
                                 )) ?>
                             </span>
                         </td>
+
+                        <td>
+                            <form
+                                action="atualizar_status_agendamento.php"
+                                method="POST"
+                                class="form-status"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="id"
+                                    value="<?= (int) $agendamento['agend_id'] ?>"
+                                >
+
+                                <select name="status">
+                                    <?php
+                                    $opcoesStatus = [
+                                        'pendente' => 'Pendente',
+                                        'confirmado' => 'Confirmado',
+                                        'concluido' => 'Concluído',
+                                        'cancelado' => 'Cancelado'
+                                    ];
+                                    ?>
+
+                                    <?php foreach ($opcoesStatus as $valor => $texto): ?>
+                                        <option
+                                            value="<?= $valor ?>"
+                                            <?= $agendamento['agend_status'] === $valor
+                                                ? 'selected'
+                                                : '' ?>
+                                        >
+                                            <?= $texto ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+
+                                <button type="submit">Atualizar</button>
+                            </form>
+                        </td>
+
                     </tr>
                 <?php endforeach; ?>
 
                 <?php if (count($agendamentos) === 0): ?>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             Nenhum agendamento encontrado.
                         </td>
                     </tr>
