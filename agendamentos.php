@@ -184,6 +184,13 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
             background-color: #f8d7da;
         }
 
+        .link-editar {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #17202a;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 
@@ -200,6 +207,11 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
     <?php elseif (($_GET['status'] ?? '') === 'atualizado'): ?>
         <div class="mensagem-sucesso">
             Status atualizado com sucesso!
+        </div>
+
+    <?php elseif (($_GET['status'] ?? '') === 'editado'): ?>
+        <div class="mensagem-sucesso">
+            Agendamento atualizado com sucesso!
         </div>
 
     <?php elseif (isset($_GET['status'])): ?>
@@ -278,6 +290,13 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
                         </td>
 
                         <td>
+                            <a
+                                href="editar_agendamento.php?id=<?= (int) $agendamento['agend_id'] ?>"
+                                class="link-editar"
+                            >
+                                Editar agendamento
+                            </a>
+
                             <form
                                 action="atualizar_status_agendamento.php"
                                 method="POST"
