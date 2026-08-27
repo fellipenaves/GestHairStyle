@@ -138,6 +138,10 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
         Ver agendamentos
     </a>
 
+    <a class="botao-cadastro" href="servicos.php">
+        Ver serviços
+    </a>
+
     <h2>Clientes cadastrados</h2>
 
     <table>
