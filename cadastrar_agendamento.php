@@ -59,19 +59,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $verificarHorario = $conexao->prepare(
                 "SELECT COUNT(*)
-                 FROM AGENDAMENTO
-                 WHERE barb_id = :barbeiro_id
-                   AND agend_data_hora = :data_hora
-                   AND agend_status <> 'cancelado'"
+                FROM AGENDAMENTO
+                WHERE barb_id = :barbeiro_id
+                    AND agend_status <> 'cancelado'
+                    AND agend_data_hora < :novo_tempo_final
+                    AND agend_tempo_final > :nova_data_hora"
             );
 
             $verificarHorario->execute([
                 ':barbeiro_id' => $barbeiroId,
-                ':data_hora' => $dataHoraBanco
+                ':nova_data_hora' => $dataHoraBanco,
+                ':novo_tempo_final' => $tempoFinal
             ]);
 
             if ((int) $verificarHorario->fetchColumn() > 0) {
-                $mensagem = 'Este barbeiro já possui um agendamento nesse horário.';
+                $mensagem = 'Este barbeiro já possui um agendamento nesse período.';
             } else {
                 $conexao->beginTransaction();
 
