@@ -142,6 +142,10 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
         Ver serviços
     </a>
 
+    <a class="botao-cadastro" href="barbeiros.php">
+        Ver barbeiros
+    </a>
+
     <h2>Clientes cadastrados</h2>
 
     <table>
