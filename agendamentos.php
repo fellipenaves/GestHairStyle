@@ -2,6 +2,16 @@
 
 require_once 'conexao.php';
 
+$filtroData = trim($_GET['filtro_data'] ?? '');
+$filtroStatus = trim($_GET['filtro_status'] ?? '');
+
+$statusPermitidos = [
+    'pendente',
+    'confirmado',
+    'concluido',
+    'cancelado'
+];
+
 $sql = "
     SELECT
         a.agend_id,
@@ -24,6 +34,25 @@ $sql = "
         ON ags.agend_id = a.agend_id
     LEFT JOIN SERVICO AS s
         ON s.serv_id = ags.serv_id
+    WHERE 1 = 1
+";
+
+$parametros = [];
+
+if (
+    $filtroData !== '' &&
+    preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtroData)
+) {
+    $sql .= ' AND DATE(a.agend_data_hora) = :filtro_data';
+    $parametros[':filtro_data'] = $filtroData;
+}
+
+if (in_array($filtroStatus, $statusPermitidos, true)) {
+    $sql .= ' AND a.agend_status = :filtro_status';
+    $parametros[':filtro_status'] = $filtroStatus;
+}
+
+$sql .= "
     GROUP BY
         a.agend_id,
         a.agend_data_hora,
@@ -34,7 +63,9 @@ $sql = "
     ORDER BY a.agend_data_hora DESC
 ";
 
-$consulta = $conexao->query($sql);
+$consulta = $conexao->prepare($sql);
+$consulta->execute($parametros);
+
 $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
@@ -191,6 +222,54 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
             font-weight: bold;
         }
 
+        .form-filtros {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin: 5px 0 25px;
+            padding: 18px;
+            border-radius: 6px;
+            background-color: #f2f2f2;
+        }
+
+    .campo-filtro {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .campo-filtro label {
+        font-weight: bold;
+    }
+
+    .campo-filtro input,
+    .campo-filtro select {
+        min-width: 180px;
+        padding: 9px;
+        border: 1px solid #bbb;
+        border-radius: 4px;
+        background-color: white;
+    }
+
+    .botao-filtrar {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 4px;
+        background-color: #17202a;
+        color: white;
+        cursor: pointer;
+    }
+
+    .botao-filtrar:hover {
+        background-color: #2c3e50;
+    }
+
+    .limpar-filtros {
+        padding: 10px 0;
+        color: #17202a;
+    }
+
     </style>
 </head>
 
@@ -227,6 +306,63 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
     <a class="botao" href="cadastrar_agendamento.php">
         Novo agendamento
     </a>
+
+    <form method="GET" class="form-filtros">
+    <div class="campo-filtro">
+        <label for="filtro_data">Data</label>
+
+        <input
+            type="date"
+            id="filtro_data"
+            name="filtro_data"
+            value="<?= htmlspecialchars($filtroData) ?>"
+        >
+    </div>
+
+    <div class="campo-filtro">
+        <label for="filtro_status">Status</label>
+
+        <select id="filtro_status" name="filtro_status">
+            <option value="">Todos</option>
+
+            <option
+                value="pendente"
+                <?= $filtroStatus === 'pendente' ? 'selected' : '' ?>
+            >
+                Pendente
+            </option>
+
+            <option
+                value="confirmado"
+                <?= $filtroStatus === 'confirmado' ? 'selected' : '' ?>
+            >
+                Confirmado
+            </option>
+
+            <option
+                value="concluido"
+                <?= $filtroStatus === 'concluido' ? 'selected' : '' ?>
+            >
+                Concluído
+            </option>
+
+            <option
+                value="cancelado"
+                <?= $filtroStatus === 'cancelado' ? 'selected' : '' ?>
+            >
+                Cancelado
+            </option>
+        </select>
+    </div>
+
+    <button type="submit" class="botao-filtrar">
+        Filtrar
+    </button>
+
+    <a href="agendamentos.php" class="limpar-filtros">
+        Limpar filtros
+    </a>
+</form>
 
     <div class="tabela-container">
         <table>
