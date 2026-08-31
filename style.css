@@ -1683,3 +1683,42 @@ button:focus-visible {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================
+   PÁGINA DE BARBEIROS
+   ========================================= */
+
+.grid-resumo-barbeiros {
+    grid-template-columns:
+        repeat(3, 1fr);
+}
+
+
+/* tabela padrão */
+
+.tabela-padrao {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 15px;
+
+    box-shadow: var(--sombra);
+}
+
+.tabela-padrao table {
+    min-width: 650px;
+}
+
+
+/* responsividade */
+
+@media (max-width: 800px) {
+
+    .grid-resumo-barbeiros {
+        grid-template-columns: 1fr;
+    }
+}
