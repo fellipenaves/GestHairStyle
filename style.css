@@ -1413,3 +1413,186 @@ button:focus-visible {
         width: 100%;
     }
 }
+
+/* =========================================
+   MENU PRINCIPAL
+   ========================================= */
+
+.menu-principal {
+    width: 100%;
+    max-width: 1250px;
+
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding: 13px 18px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+
+/* MARCA */
+
+.menu-marca {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    flex-shrink: 0;
+}
+
+
+.menu-logo {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: var(--cor-principal);
+    color: var(--cor-dourada);
+
+    font-size: 20px;
+}
+
+
+.menu-marca div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.menu-marca strong {
+    color: var(--cor-principal);
+
+    font-size: 15px;
+}
+
+
+.menu-marca span {
+    margin-top: 2px;
+
+    color: var(--texto-secundario);
+
+    font-size: 10px;
+}
+
+
+/* LINKS */
+
+.menu-links {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+
+.menu-links a {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 10px 12px;
+
+    border-radius: 9px;
+
+    color: #71717a;
+
+    font-size: 13px;
+    font-weight: 650;
+
+    text-decoration: none;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.menu-links a:hover {
+    background: #f6f6f7;
+
+    color: var(--cor-principal);
+
+    transform: translateY(-1px);
+}
+
+
+/* PÁGINA ATUAL */
+
+.menu-links a.ativo {
+    background: #faf5e9;
+
+    color: #987229;
+}
+
+
+.menu-icone {
+    font-size: 15px;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE DO MENU
+   ========================================= */
+
+@media (max-width: 900px) {
+
+    .menu-principal {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .menu-links {
+        width: 100%;
+
+        overflow-x: auto;
+
+        padding-bottom: 3px;
+    }
+
+    .menu-links a {
+        white-space: nowrap;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .menu-principal {
+        padding: 12px;
+    }
+
+    .menu-links {
+        gap: 3px;
+    }
+
+    .menu-links a {
+        padding: 9px 10px;
+
+        font-size: 12px;
+    }
+
+    .menu-marca span {
+        display: none;
+    }
+}

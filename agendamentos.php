@@ -83,6 +83,11 @@ $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
+<?php
+$paginaAtual = 'agendamentos';
+require 'menu.php';
+?>
+
 <div class="container">
     <h1>Agendamentos</h1>
 

@@ -164,6 +164,11 @@ $proximosAgendamentos =
 
 <body>
 
+<?php
+$paginaAtual = 'dashboard';
+require 'menu.php';
+?>
+
 <div class="container">
 
     <div class="topo-dashboard">
