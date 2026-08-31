@@ -1596,3 +1596,90 @@ button:focus-visible {
         display: none;
     }
 }
+
+/* =========================================
+   CABEÇALHO DAS PÁGINAS
+   ========================================= */
+
+.cabecalho-pagina {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 25px;
+}
+
+.cabecalho-pagina h1 {
+    margin: 0;
+
+    color: var(--cor-principal);
+
+    font-size: 30px;
+}
+
+.cabecalho-pagina p {
+    margin: 7px 0 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 14px;
+}
+
+
+/* botão principal */
+
+.botao-destaque {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 18px;
+
+    border-radius: 10px;
+
+    background: var(--cor-dourada);
+    color: #18181b;
+
+    font-size: 13px;
+    font-weight: 750;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.botao-destaque:hover {
+    transform: translateY(-2px);
+
+    background: var(--cor-dourada-hover);
+    color: #ffffff;
+}
+
+
+/* serviços */
+
+.grid-resumo-servicos {
+    grid-template-columns:
+        repeat(3, 1fr);
+}
+
+
+@media (max-width: 800px) {
+
+    .cabecalho-pagina {
+        flex-direction: column;
+    }
+
+    .botao-destaque {
+        width: 100%;
+    }
+
+    .grid-resumo-servicos {
+        grid-template-columns: 1fr;
+    }
+}

@@ -15,6 +15,25 @@ $consulta = $conexao->query(
 
 $servicos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
+$totalServicos = count($servicos);
+
+$precoMedio = 0;
+$duracaoMedia = 0;
+
+if ($totalServicos > 0) {
+
+    $somaPrecos = array_sum(
+        array_column($servicos, 'serv_preco')
+    );
+
+    $somaDuracoes = array_sum(
+        array_column($servicos, 'serv_duracao_min')
+    );
+
+    $precoMedio = $somaPrecos / $totalServicos;
+    $duracaoMedia = $somaDuracoes / $totalServicos;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -25,112 +44,100 @@ $servicos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
     <title>Serviços | GestHairStyle</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: 40px 20px;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #222;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        h1 {
-            margin-top: 0;
-            color: #17202a;
-        }
-
-        .botao {
-            display: inline-block;
-            margin: 10px 8px 20px 0;
-            padding: 12px 18px;
-            border-radius: 5px;
-            background-color: #17202a;
-            color: white;
-            text-decoration: none;
-        }
-
-        .botao:hover {
-            background-color: #2c3e50;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            color: white;
-            background-color: #17202a;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        @media (max-width: 700px) {
-            .tabela-container {
-                overflow-x: auto;
-            }
-        }
-
-        .mensagem-sucesso {
-            margin: 15px 0;
-            padding: 12px;
-            border-radius: 5px;
-            color: #155724;
-            background-color: #d4edda;
-        }
-
-        .form-excluir {
-            display: inline;
-        }
-
-        .botao-excluir {
-            margin-left: 10px;
-            padding: 0;
-            border: none;
-            background: none;
-            color: #c0392b;
-            font: inherit;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .mensagem-erro {
-            margin: 15px 0;
-            padding: 12px;
-            border-radius: 5px;
-            color: #721c24;
-            background-color: #f8d7da;
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+<?php
+$paginaAtual = 'servicos';
+require 'menu.php';
+?>
+
 <div class="container">
-    <h1>Serviços</h1>
+    <div class="cabecalho-pagina">
+
+    <div>
+        <span class="subtitulo-dashboard">
+            CATÁLOGO
+        </span>
+
+        <h1>Serviços</h1>
+
+        <p>
+            Gerencie os serviços oferecidos,
+            valores e duração dos atendimentos.
+        </p>
+    </div>
+
+    <a
+        href="cadastrar_servico.php"
+        class="botao-destaque"
+    >
+        + Novo serviço
+    </a>
+
+</div>
+
+
+<div class="grid-resumo grid-resumo-servicos">
+
+    <div class="card-resumo">
+        <div class="icone-card">✂️</div>
+
+        <div class="info-card">
+            <span>Serviços cadastrados</span>
+
+            <strong>
+                <?= $totalServicos ?>
+            </strong>
+
+            <small>
+                Total disponível no catálogo
+            </small>
+        </div>
+    </div>
+
+
+    <div class="card-resumo">
+        <div class="icone-card">💰</div>
+
+        <div class="info-card">
+            <span>Preço médio</span>
+
+            <strong>
+                R$ <?= number_format(
+                    $precoMedio,
+                    2,
+                    ',',
+                    '.'
+                ) ?>
+            </strong>
+
+            <small>
+                Média dos serviços cadastrados
+            </small>
+        </div>
+    </div>
+
+
+    <div class="card-resumo">
+        <div class="icone-card">⏱️</div>
+
+        <div class="info-card">
+            <span>Duração média</span>
+
+            <strong>
+                <?= round($duracaoMedia) ?> min
+            </strong>
+
+            <small>
+                Tempo médio de atendimento
+            </small>
+        </div>
+    </div>
+
+</div>
 
     <?php if (($_GET['status'] ?? '') === 'criado'): ?>
         <div class="mensagem-sucesso">
@@ -157,14 +164,6 @@ $servicos = $consulta->fetchAll(PDO::FETCH_ASSOC);
             Não foi possível excluir o serviço.
         </div>
     <?php endif; ?>
-
-    <a class="botao" href="index.php">
-        Voltar aos clientes
-    </a>
-
-    <a class="botao" href="cadastrar_servico.php">
-        Novo serviço
-    </a>
 
     <div class="tabela-container">
         <table>
