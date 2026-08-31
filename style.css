@@ -729,3 +729,361 @@ button:focus-visible {
             nowrap;
     }
 }
+
+/* =========================================
+   PRÓXIMOS ATENDIMENTOS
+   ========================================= */
+
+.painel-agenda {
+    margin-bottom: 28px;
+    padding: 28px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+
+    box-shadow: var(--sombra);
+}
+
+.cabecalho-agenda {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+
+    margin-bottom: 22px;
+}
+
+.subtitulo-dashboard {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--cor-dourada);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+}
+
+.cabecalho-agenda h2 {
+    margin: 0;
+
+    color: var(--cor-principal);
+
+    font-size: 21px;
+}
+
+.cabecalho-agenda p {
+    margin: 6px 0 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+}
+
+.link-ver-todos {
+    padding-top: 5px;
+
+    color: #987229;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.link-ver-todos:hover {
+    text-decoration: underline;
+}
+
+
+/* lista */
+
+.lista-agenda {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* atendimento */
+
+.item-agenda {
+    display: grid;
+
+    grid-template-columns:
+        58px
+        75px
+        minmax(180px, 2fr)
+        minmax(120px, 1fr)
+        100px
+        110px
+        55px;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px 5px;
+
+    border-bottom: 1px solid #eeeeef;
+
+    transition: background-color 0.15s ease;
+}
+
+.item-agenda:last-child {
+    border-bottom: none;
+}
+
+.item-agenda:hover {
+    background-color: #fbfaf7;
+}
+
+
+/* calendário */
+
+.data-agenda {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 52px;
+
+    border-radius: 11px;
+
+    background: #faf5e9;
+}
+
+.dia-agenda {
+    color: var(--cor-principal);
+
+    font-size: 20px;
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+.mes-agenda {
+    margin-top: 3px;
+
+    color: #987229;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* horário */
+
+.horario-agenda {
+    display: flex;
+    flex-direction: column;
+}
+
+.horario-agenda span {
+    color: var(--cor-principal);
+
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.horario-agenda small {
+    margin-top: 3px;
+
+    color: var(--texto-secundario);
+
+    font-size: 11px;
+}
+
+
+/* cliente */
+
+.cliente-agenda {
+    display: flex;
+    flex-direction: column;
+}
+
+.cliente-agenda strong {
+    color: var(--cor-principal);
+
+    font-size: 14px;
+}
+
+.cliente-agenda small {
+    margin-top: 4px;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+}
+
+
+/* profissional */
+
+.barbeiro-agenda {
+    display: flex;
+    flex-direction: column;
+}
+
+.barbeiro-agenda span {
+    color: #a1a1aa;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+}
+
+.barbeiro-agenda strong {
+    margin-top: 4px;
+
+    color: #52525b;
+
+    font-size: 13px;
+}
+
+
+/* preço */
+
+.valor-agenda {
+    color: var(--cor-principal);
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* status */
+
+.badge-status {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.badge-status.pendente {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+.badge-status.confirmado {
+    color: #1e40af;
+    background: #dbeafe;
+}
+
+.badge-status.concluido {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.badge-status.cancelado {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+
+/* editar */
+
+.acao-agenda a {
+    color: #987229;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.acao-agenda a:hover {
+    text-decoration: underline;
+}
+
+
+/* sem agendamentos */
+
+.agenda-vazia {
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 25px;
+
+    border-radius: 13px;
+
+    background: #f8f8f9;
+}
+
+.icone-agenda-vazia {
+    font-size: 30px;
+}
+
+.agenda-vazia strong {
+    color: var(--cor-principal);
+}
+
+.agenda-vazia p {
+    margin: 5px 0 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 13px;
+}
+
+
+/* responsividade */
+
+@media (max-width: 1000px) {
+
+    .item-agenda {
+        grid-template-columns:
+            55px
+            70px
+            2fr
+            1fr
+            100px;
+    }
+
+    .barbeiro-agenda {
+        display: none;
+    }
+
+    .acao-agenda {
+        display: none;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .painel-agenda {
+        padding: 20px 16px;
+    }
+
+    .cabecalho-agenda {
+        flex-direction: column;
+    }
+
+    .item-agenda {
+        grid-template-columns:
+            50px
+            65px
+            1fr;
+
+        gap: 10px;
+    }
+
+    .valor-agenda,
+    .status-agenda {
+        display: none;
+    }
+}
