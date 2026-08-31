@@ -1087,3 +1087,329 @@ button:focus-visible {
         display: none;
     }
 }
+
+/* =========================================
+   PÁGINA DE AGENDAMENTOS
+   ========================================= */
+
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 10px 8px 20px 0;
+    padding: 11px 17px;
+
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    background: var(--cor-principal);
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 650;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.botao:hover {
+    transform: translateY(-2px);
+    background: var(--cor-secundaria);
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================
+   FILTROS
+   ========================================= */
+
+.form-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+
+    gap: 14px;
+
+    margin: 5px 0 25px;
+    padding: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.campo-filtro {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.campo-filtro label {
+    color: #52525b;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.campo-filtro input,
+.campo-filtro select {
+    min-width: 190px;
+
+    padding: 11px 12px;
+
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: var(--texto);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.campo-filtro input:focus,
+.campo-filtro select:focus {
+    border-color: var(--cor-dourada);
+
+    box-shadow:
+        0 0 0 3px rgba(212, 168, 83, 0.15);
+}
+
+.botao-filtrar {
+    min-height: 41px;
+
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--cor-dourada);
+    color: #18181b;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.botao-filtrar:hover {
+    transform: translateY(-1px);
+
+    background: var(--cor-dourada-hover);
+    color: #ffffff;
+}
+
+.limpar-filtros {
+    padding: 11px 4px;
+
+    color: #71717a;
+
+    font-size: 13px;
+    font-weight: 650;
+
+    text-decoration: none;
+}
+
+.limpar-filtros:hover {
+    color: #987229;
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   TABELA DE AGENDAMENTOS
+   ========================================= */
+
+.tabela-container {
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 15px;
+
+    box-shadow: var(--sombra);
+}
+
+.tabela-container table {
+    min-width: 1000px;
+}
+
+
+/* =========================================
+   STATUS
+   ========================================= */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.status.pendente {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+.status.confirmado {
+    color: #1e40af;
+    background: #dbeafe;
+}
+
+.status.concluido {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.status.cancelado {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+
+/* =========================================
+   AÇÕES DO AGENDAMENTO
+   ========================================= */
+
+.link-editar {
+    display: inline-block;
+
+    margin-bottom: 9px;
+
+    color: #987229;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.link-editar:hover {
+    text-decoration: underline;
+}
+
+.form-status {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+}
+
+.form-status select {
+    padding: 7px 8px;
+
+    border: 1px solid #d4d4d8;
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.form-status button {
+    padding: 8px 10px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: var(--cor-principal);
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.form-status button:hover {
+    background: var(--cor-secundaria);
+}
+
+
+/* =========================================
+   MENSAGENS
+   ========================================= */
+
+.mensagem-sucesso,
+.mensagem-erro {
+    margin: 15px 0 20px;
+
+    padding: 14px 17px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.mensagem-sucesso {
+    color: var(--sucesso);
+    background: var(--sucesso-fundo);
+
+    border-left: 4px solid var(--sucesso);
+}
+
+.mensagem-erro {
+    color: var(--erro);
+    background: var(--erro-fundo);
+
+    border-left: 4px solid var(--erro);
+}
+
+
+/* =========================================
+   RESPONSIVIDADE - AGENDAMENTOS
+   ========================================= */
+
+@media (max-width: 700px) {
+
+    .form-filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .campo-filtro input,
+    .campo-filtro select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .botao-filtrar {
+        width: 100%;
+    }
+}
