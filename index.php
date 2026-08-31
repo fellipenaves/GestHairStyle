@@ -3,9 +3,13 @@
 require_once 'conexao.php';
 
 $sql = 'SELECT cli_id, cli_nome, cli_telefone FROM CLIENTE ORDER BY cli_nome';
-
 $consulta = $conexao->query($sql);
 $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+$totalClientes = $conexao->query('SELECT COUNT(*) FROM CLIENTE')->fetchColumn();
+$totalAgendamentos = $conexao->query('SELECT COUNT(*) FROM AGENDAMENTO')->fetchColumn();
+$totalBarbeiros = $conexao->query('SELECT COUNT(*) FROM BARBEIRO')->fetchColumn();
+$totalServicos = $conexao->query('SELECT COUNT(*) FROM SERVICO')->fetchColumn();
 
 ?>
 
@@ -14,105 +18,31 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>GestHairStyle</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 40px;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #222;
-        }
-
-        .botao-cadastro {
-            display: inline-block;
-            margin: 10px 0;
-            padding: 12px 18px;
-            border-radius: 5px;
-            background-color: #17202a;
-            color: white;
-            text-decoration: none;
-        }
-
-        .botao-cadastro:hover {
-            background-color: #2c3e50;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        h1 {
-            color: #17202a;
-        }
-
-        table {
-            width: 100%;
-            margin-top: 25px;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            color: white;
-            background-color: #17202a;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .form-excluir {
-            display: inline;
-        }
-
-        .botao-excluir {
-            margin-left: 10px;
-            padding: 0;
-            border: none;
-            background: none;
-            color: #c0392b;
-            font: inherit;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .aviso {
-            margin: 15px 0;
-            padding: 12px;
-            border-radius: 5px;
-        }
-
-        .aviso-sucesso {
-            color: #155724;
-            background-color: #d4edda;
-        }
-
-        .aviso-erro {
-            color: #721c24;
-            background-color: #f8d7da;
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
-    <h1>GestHairStyle</h1>
+
+    <div class="topo-dashboard">
+        <div class="topo-texto">
+            <span class="tag-painel">Painel de Gestão</span>
+            <h1>GestHairStyle</h1>
+            <p>
+                Gerencie clientes, barbeiros, serviços e agendamentos
+                de forma simples, rápida e organizada.
+            </p>
+        </div>
+
+        <div class="acoes-rapidas">
+            <a class="botao-cadastro" href="cadastrar_cliente.php">+ Novo cliente</a>
+            <a class="botao-cadastro" href="agendamentos.php">Agendamentos</a>
+            <a class="botao-cadastro" href="servicos.php">Serviços</a>
+            <a class="botao-cadastro" href="barbeiros.php">Barbeiros</a>
+        </div>
+    </div>
 
     <?php if (($_GET['status'] ?? '') === 'excluido'): ?>
         <div class="aviso aviso-sucesso">
@@ -128,67 +58,98 @@ $clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
         </div>
     <?php endif; ?>
 
-    <p>Conexão com o banco realizada com sucesso!</p>
+    <div class="grid-resumo">
+        <div class="card-resumo">
+            <div class="icone-card">👥</div>
+            <div class="info-card">
+                <span>Clientes</span>
+                <strong><?= (int) $totalClientes ?></strong>
+                <small>Total de clientes cadastrados</small>
+            </div>
+        </div>
 
-    <a class="botao-cadastro" href="cadastrar_cliente.php">
-        Cadastrar novo cliente
-    </a>
+        <div class="card-resumo">
+            <div class="icone-card">📅</div>
+            <div class="info-card">
+                <span>Agendamentos</span>
+                <strong><?= (int) $totalAgendamentos ?></strong>
+                <small>Total de agendamentos registrados</small>
+            </div>
+        </div>
 
-    <a class="botao-cadastro" href="agendamentos.php">
-        Ver agendamentos
-    </a>
+        <div class="card-resumo">
+            <div class="icone-card">✂️</div>
+            <div class="info-card">
+                <span>Serviços</span>
+                <strong><?= (int) $totalServicos ?></strong>
+                <small>Serviços disponíveis no sistema</small>
+            </div>
+        </div>
 
-    <a class="botao-cadastro" href="servicos.php">
-        Ver serviços
-    </a>
+        <div class="card-resumo">
+            <div class="icone-card">🧔</div>
+            <div class="info-card">
+                <span>Barbeiros</span>
+                <strong><?= (int) $totalBarbeiros ?></strong>
+                <small>Profissionais cadastrados</small>
+            </div>
+        </div>
+    </div>
 
-    <a class="botao-cadastro" href="barbeiros.php">
-        Ver barbeiros
-    </a>
+    <div class="bloco-tabela">
+        <div class="cabecalho-bloco">
+            <div>
+                <h2>Clientes cadastrados</h2>
+                <p>Visualize, edite ou exclua os clientes cadastrados no sistema.</p>
+            </div>
+        </div>
 
-    <h2>Clientes cadastrados</h2>
+        <div class="tabela-responsiva">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Telefone</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
+                <tbody>
+                    <?php foreach ($clientes as $cliente): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($cliente['cli_id']) ?></td>
+                            <td><?= htmlspecialchars($cliente['cli_nome']) ?></td>
+                            <td><?= htmlspecialchars($cliente['cli_telefone'] ?? '') ?></td>
+                            <td>
+                                <a href="editar_cliente.php?id=<?= (int) $cliente['cli_id'] ?>">
+                                    Editar
+                                </a>
 
-        <tbody>
-            <?php foreach ($clientes as $cliente): ?>
-                <tr>
-                    <td><?= htmlspecialchars($cliente['cli_id']) ?></td>
-                    <td><?= htmlspecialchars($cliente['cli_nome']) ?></td>
-                    <td><?= htmlspecialchars($cliente['cli_telefone'] ?? '') ?></td>
-                    <td>
-                        <a href="editar_cliente.php?id=<?= (int) $cliente['cli_id'] ?>">
-                            Editar
-                        </a>
-                        <form
-                            action="excluir_cliente.php"
-                            method="POST"
-                            class="form-excluir"
-                            onsubmit="return confirm('Deseja realmente excluir este cliente?');"
-                        >
-                            <input
-                                type="hidden"
-                                name="id"
-                                value="<?= (int) $cliente['cli_id'] ?>"
-                            >
+                                <form
+                                    action="excluir_cliente.php"
+                                    method="POST"
+                                    class="form-excluir"
+                                    onsubmit="return confirm('Deseja realmente excluir este cliente?');"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="id"
+                                        value="<?= (int) $cliente['cli_id'] ?>"
+                                    >
 
-                            <button type="submit" class="botao-excluir">
-                                Excluir
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                                    <button type="submit" class="botao-excluir">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 </body>
