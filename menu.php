@@ -28,7 +28,7 @@ $paginaAtual = $paginaAtual ?? '';
 
 
         <a
-            href="index.php#clientes"
+            href="clientes.php"
             class="<?= $paginaAtual === 'clientes' ? 'ativo' : '' ?>"
         >
             <span class="menu-icone">👥</span>

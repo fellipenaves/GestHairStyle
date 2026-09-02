@@ -2,25 +2,6 @@
 
 require_once 'conexao.php';
 
-
-/* =========================================
-   CLIENTES
-   ========================================= */
-
-$sql = '
-    SELECT
-        cli_id,
-        cli_nome,
-        cli_telefone
-    FROM CLIENTE
-    ORDER BY cli_nome
-';
-
-$consulta = $conexao->query($sql);
-
-$clientes = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-
 /* =========================================
    INDICADORES GERAIS
    ========================================= */
@@ -459,62 +440,6 @@ require 'menu.php';
         </div>
 
     <?php endif; ?>
-
-</div>
-
-    <div class="bloco-tabela">
-        <div class="cabecalho-bloco">
-            <div>
-                <h2>Clientes cadastrados</h2>
-                <p>Visualize, edite ou exclua os clientes cadastrados no sistema.</p>
-            </div>
-        </div>
-
-        <div class="tabela-responsiva">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Nome</th>
-                        <th>Telefone</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <?php foreach ($clientes as $cliente): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($cliente['cli_id']) ?></td>
-                            <td><?= htmlspecialchars($cliente['cli_nome']) ?></td>
-                            <td><?= htmlspecialchars($cliente['cli_telefone'] ?? '') ?></td>
-                            <td>
-                                <a href="editar_cliente.php?id=<?= (int) $cliente['cli_id'] ?>">
-                                    Editar
-                                </a>
-
-                                <form
-                                    action="excluir_cliente.php"
-                                    method="POST"
-                                    class="form-excluir"
-                                    onsubmit="return confirm('Deseja realmente excluir este cliente?');"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="id"
-                                        value="<?= (int) $cliente['cli_id'] ?>"
-                                    >
-
-                                    <button type="submit" class="botao-excluir">
-                                        Excluir
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
 </div>
 
