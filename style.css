@@ -2262,3 +2262,152 @@ button:focus-visible {
     }
 
 }
+
+/* =========================================
+   CARDS DE STATUS CLICÁVEIS
+   ========================================= */
+
+.link-card-status {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.link-card-status:hover {
+    text-decoration: none;
+}
+
+.link-card-status.status-ativo {
+    border-color: var(--cor-dourada);
+
+    box-shadow:
+        0 0 0 2px rgba(212, 168, 83, 0.12),
+        0 12px 30px rgba(0, 0, 0, 0.08);
+
+    transform: translateY(-3px);
+}
+
+.link-card-status.status-ativo::after {
+    content: "Filtro ativo";
+
+    position: absolute;
+
+    top: 10px;
+    right: 12px;
+
+    padding: 4px 7px;
+
+    border-radius: 12px;
+
+    background: #faf5e9;
+    color: #987229;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* =========================================
+   REFINAMENTO DA TABELA DE AGENDAMENTOS
+   ========================================= */
+
+.tabela-container tbody tr {
+    transition:
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.tabela-container tbody tr:hover {
+    background: #fffdf8;
+}
+
+
+/* primeira coluna: data e horário */
+
+.tabela-container td:first-child {
+    color: var(--cor-principal);
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* cliente */
+
+.tabela-container td:nth-child(2) {
+    color: #27272a;
+
+    font-weight: 650;
+}
+
+
+/* barbeiro */
+
+.tabela-container td:nth-child(3) {
+    color: #52525b;
+}
+
+
+/* serviço */
+
+.tabela-container td:nth-child(4) {
+    max-width: 220px;
+
+    color: #71717a;
+
+    line-height: 1.45;
+}
+
+
+/* preço */
+
+.tabela-container td:nth-child(5) {
+    color: #987229;
+
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+
+/* ações */
+
+.tabela-container td:last-child {
+    min-width: 185px;
+}
+
+
+/* melhora do seletor de status */
+
+.form-status {
+    margin-top: 3px;
+}
+
+.form-status select {
+    cursor: pointer;
+}
+
+
+/* cabeçalho da tabela */
+
+.tabela-container th {
+    white-space: nowrap;
+}
+
+
+/* visual para telas menores */
+
+@media (max-width: 800px) {
+
+    .tabela-container {
+        border-radius: 12px;
+    }
+
+    .tabela-container td:nth-child(4) {
+        max-width: none;
+    }
+
+}

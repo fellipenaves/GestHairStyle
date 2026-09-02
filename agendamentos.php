@@ -123,7 +123,7 @@ require 'menu.php';
 ?>
 
 <div class="container">
-    
+
     <div class="cabecalho-pagina">
 
     <div>
@@ -154,96 +154,96 @@ require 'menu.php';
 
 <div class="grid-resumo grid-status-agendamentos">
 
-    <div class="card-resumo card-status card-pendente">
+    <a
+    href="agendamentos.php?filtro_status=pendente"
+    class="card-resumo card-status card-pendente link-card-status
+        <?= $filtroStatus === 'pendente' ? 'status-ativo' : '' ?>"
+>
 
-        <div class="icone-card">
-            ⏳
-        </div>
+    <div class="icone-card">⏳</div>
 
-        <div class="info-card">
+    <div class="info-card">
+        <span>Pendentes</span>
 
-            <span>Pendentes</span>
+        <strong>
+            <?= $contagemStatus['pendente'] ?>
+        </strong>
 
-            <strong>
-                <?= $contagemStatus['pendente'] ?>
-            </strong>
-
-            <small>
-                Aguardando confirmação
-            </small>
-
-        </div>
-
+        <small>
+            Aguardando confirmação
+        </small>
     </div>
 
+</a>
 
-    <div class="card-resumo card-status card-confirmado">
 
-        <div class="icone-card">
-            ✓
-        </div>
+    <a
+    href="agendamentos.php?filtro_status=confirmado"
+    class="card-resumo card-status card-confirmado link-card-status
+        <?= $filtroStatus === 'confirmado' ? 'status-ativo' : '' ?>"
+>
 
-        <div class="info-card">
+    <div class="icone-card">✓</div>
 
-            <span>Confirmados</span>
+    <div class="info-card">
+        <span>Confirmados</span>
 
-            <strong>
-                <?= $contagemStatus['confirmado'] ?>
-            </strong>
+        <strong>
+            <?= $contagemStatus['confirmado'] ?>
+        </strong>
 
-            <small>
-                Atendimentos confirmados
-            </small>
-
-        </div>
-
+        <small>
+            Atendimentos confirmados
+        </small>
     </div>
 
+</a>
 
-    <div class="card-resumo card-status card-concluido">
 
-        <div class="icone-card">
-            ✂️
-        </div>
+    <a
+    href="agendamentos.php?filtro_status=concluido"
+    class="card-resumo card-status card-concluido link-card-status
+        <?= $filtroStatus === 'concluido' ? 'status-ativo' : '' ?>"
+>
 
-        <div class="info-card">
+    <div class="icone-card">✂️</div>
 
-            <span>Concluídos</span>
+    <div class="info-card">
+        <span>Concluídos</span>
 
-            <strong>
-                <?= $contagemStatus['concluido'] ?>
-            </strong>
+        <strong>
+            <?= $contagemStatus['concluido'] ?>
+        </strong>
 
-            <small>
-                Atendimentos realizados
-            </small>
-
-        </div>
-
+        <small>
+            Atendimentos realizados
+        </small>
     </div>
 
+</a>
 
-    <div class="card-resumo card-status card-cancelado">
 
-        <div class="icone-card">
-            ×
-        </div>
+    <a
+    href="agendamentos.php?filtro_status=cancelado"
+    class="card-resumo card-status card-cancelado link-card-status
+        <?= $filtroStatus === 'cancelado' ? 'status-ativo' : '' ?>"
+>
 
-        <div class="info-card">
+    <div class="icone-card">×</div>
 
-            <span>Cancelados</span>
+    <div class="info-card">
+        <span>Cancelados</span>
 
-            <strong>
-                <?= $contagemStatus['cancelado'] ?>
-            </strong>
+        <strong>
+            <?= $contagemStatus['cancelado'] ?>
+        </strong>
 
-            <small>
-                Atendimentos cancelados
-            </small>
-
-        </div>
-
+        <small>
+            Atendimentos cancelados
+        </small>
     </div>
+
+</a>
 
 </div>
 
