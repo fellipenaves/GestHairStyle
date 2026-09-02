@@ -132,6 +132,148 @@ $consultaProximos = $conexao->query($sqlProximos);
 $proximosAgendamentos =
     $consultaProximos->fetchAll(PDO::FETCH_ASSOC);
 
+/* =========================================
+   FATURAMENTO - ÚLTIMOS 6 MESES
+   ========================================= */
+
+$nomesMeses = [
+    1 => 'Jan',
+    2 => 'Fev',
+    3 => 'Mar',
+    4 => 'Abr',
+    5 => 'Mai',
+    6 => 'Jun',
+    7 => 'Jul',
+    8 => 'Ago',
+    9 => 'Set',
+    10 => 'Out',
+    11 => 'Nov',
+    12 => 'Dez'
+];
+
+$inicioPeriodo = new DateTime('first day of -5 months');
+$inicioPeriodo->setTime(0, 0, 0);
+
+$sqlFaturamento6Meses = "
+    SELECT
+        DATE_FORMAT(agend_data_hora, '%Y-%m') AS mes,
+        COALESCE(SUM(agend_preco), 0) AS total
+    FROM AGENDAMENTO
+    WHERE agend_status = 'concluido'
+      AND agend_data_hora >= :inicio_periodo
+    GROUP BY DATE_FORMAT(agend_data_hora, '%Y-%m')
+    ORDER BY mes
+";
+
+$consultaFaturamento6Meses =
+    $conexao->prepare($sqlFaturamento6Meses);
+
+$consultaFaturamento6Meses->execute([
+    ':inicio_periodo' =>
+        $inicioPeriodo->format('Y-m-d H:i:s')
+]);
+
+$resultadoFaturamento6Meses =
+    $consultaFaturamento6Meses->fetchAll(PDO::FETCH_ASSOC);
+
+
+/* Cria os 6 meses, inclusive os que não possuem faturamento */
+
+$faturamentoPorMes = [];
+
+for ($i = 5; $i >= 0; $i--) {
+
+    $dataMes = new DateTime(
+        "first day of -{$i} months"
+    );
+
+    $chave = $dataMes->format('Y-m');
+
+    $numeroMes = (int) $dataMes->format('n');
+
+    $faturamentoPorMes[$chave] = [
+        'rotulo' => $nomesMeses[$numeroMes],
+        'valor' => 0
+    ];
+}
+
+
+/* Preenche os valores encontrados no banco */
+
+foreach ($resultadoFaturamento6Meses as $registro) {
+
+    if (isset(
+        $faturamentoPorMes[$registro['mes']]
+    )) {
+
+        $faturamentoPorMes[
+            $registro['mes']
+        ]['valor'] = (float) $registro['total'];
+    }
+}
+
+
+/* Maior valor para calcular as barras do gráfico */
+
+$valoresFaturamento = array_column(
+    $faturamentoPorMes,
+    'valor'
+);
+
+$maiorFaturamento =
+    !empty($valoresFaturamento)
+        ? max($valoresFaturamento)
+        : 0;
+
+if ($maiorFaturamento <= 0) {
+    $maiorFaturamento = 1;
+}
+
+
+/* =========================================
+   SERVIÇOS MAIS PROCURADOS
+   ========================================= */
+
+$sqlServicosPopulares = "
+    SELECT
+        s.serv_nome,
+        COUNT(*) AS quantidade
+    FROM AGENDAMENTO_SERVICO AS ags
+
+    INNER JOIN SERVICO AS s
+        ON s.serv_id = ags.serv_id
+
+    INNER JOIN AGENDAMENTO AS a
+        ON a.agend_id = ags.agend_id
+
+    WHERE a.agend_status <> 'cancelado'
+
+    GROUP BY
+        s.serv_id,
+        s.serv_nome
+
+    ORDER BY quantidade DESC, s.serv_nome ASC
+
+    LIMIT 5
+";
+
+$consultaServicosPopulares =
+    $conexao->query($sqlServicosPopulares);
+
+$servicosPopulares =
+    $consultaServicosPopulares->fetchAll(
+        PDO::FETCH_ASSOC
+    );
+
+$maiorQuantidadeServico =
+    !empty($servicosPopulares)
+        ? (int) $servicosPopulares[0]['quantidade']
+        : 1;
+
+if ($maiorQuantidadeServico <= 0) {
+    $maiorQuantidadeServico = 1;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -262,6 +404,217 @@ require 'menu.php';
             </small>
         </div>
     </div>
+
+</div>
+
+<!-- =========================================
+     VISÃO GERENCIAL
+     ========================================= -->
+
+<div class="grid-gerencial">
+
+
+    <!-- FATURAMENTO -->
+
+    <div class="card-gerencial card-faturamento">
+
+        <div class="cabecalho-card-gerencial">
+
+            <div>
+
+                <span class="subtitulo-dashboard">
+                    DESEMPENHO
+                </span>
+
+                <h2>Faturamento</h2>
+
+                <p>
+                    Atendimentos concluídos nos últimos 6 meses.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="grafico-faturamento">
+
+            <?php foreach ($faturamentoPorMes as $mes): ?>
+
+                <?php
+
+                $altura = $mes['valor'] > 0
+                    ? max(
+                        5,
+                        round(
+                            ($mes['valor'] / $maiorFaturamento)
+                            * 100
+                        )
+                    )
+                    : 2;
+
+                ?>
+
+                <div class="coluna-grafico">
+
+                    <div class="valor-grafico">
+
+                        <?php if ($mes['valor'] > 0): ?>
+
+                            R$ <?= number_format(
+                                $mes['valor'],
+                                2,
+                                ',',
+                                '.'
+                            ) ?>
+
+                        <?php else: ?>
+
+                            R$ 0
+
+                        <?php endif; ?>
+
+                    </div>
+
+
+                    <div class="area-barra">
+
+                        <div
+                            class="barra-faturamento"
+                            style="height: <?= $altura ?>%;"
+                        ></div>
+
+                    </div>
+
+
+                    <span class="mes-grafico">
+                        <?= htmlspecialchars($mes['rotulo']) ?>
+                    </span>
+
+                </div>
+
+            <?php endforeach; ?>
+
+        </div>
+
+    </div>
+
+
+    <!-- SERVIÇOS MAIS PROCURADOS -->
+
+    <div class="card-gerencial">
+
+        <div class="cabecalho-card-gerencial">
+
+            <div>
+
+                <span class="subtitulo-dashboard">
+                    POPULARIDADE
+                </span>
+
+                <h2>Serviços mais procurados</h2>
+
+                <p>
+                    Ranking baseado nos agendamentos registrados.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <?php if (count($servicosPopulares) > 0): ?>
+
+            <div class="ranking-servicos">
+
+                <?php foreach (
+                    $servicosPopulares as $indice => $servico
+                ): ?>
+
+                    <?php
+
+                    $percentual =
+                        ((int) $servico['quantidade']
+                        / $maiorQuantidadeServico)
+                        * 100;
+
+                    ?>
+
+                    <div class="item-ranking">
+
+                        <div class="linha-ranking">
+
+                            <div class="nome-ranking">
+
+                                <span class="posicao-ranking">
+                                    <?= $indice + 1 ?>
+                                </span>
+
+                                <strong>
+                                    <?= htmlspecialchars(
+                                        $servico['serv_nome']
+                                    ) ?>
+                                </strong>
+
+                            </div>
+
+
+                            <span class="quantidade-ranking">
+
+                                <?= (int) $servico['quantidade'] ?>
+
+                                atendimento<?= (int)
+                                    $servico['quantidade'] !== 1
+                                    ? 's'
+                                    : ''
+                                ?>
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="trilho-ranking">
+
+                            <div
+                                class="progresso-ranking"
+                                style="width: <?= $percentual ?>%;"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                <?php endforeach; ?>
+
+            </div>
+
+
+        <?php else: ?>
+
+            <div class="estado-vazio-gerencial">
+
+                <span>✂️</span>
+
+                <div>
+
+                    <strong>
+                        Ainda não há dados suficientes.
+                    </strong>
+
+                    <p>
+                        O ranking aparecerá conforme
+                        os serviços forem agendados.
+                    </p>
+
+                </div>
+
+            </div>
+
+        <?php endif; ?>
+
+    </div>
+
 
 </div>
 

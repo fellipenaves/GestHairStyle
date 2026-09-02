@@ -1808,3 +1808,365 @@ button:focus-visible {
     }
 
 }
+
+/* =========================================
+   VISÃO GERENCIAL DO DASHBOARD
+   ========================================= */
+
+.grid-gerencial {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.4fr)
+        minmax(320px, 0.8fr);
+
+    gap: 18px;
+
+    margin-bottom: 28px;
+}
+
+
+.card-gerencial {
+    min-width: 0;
+
+    padding: 26px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+
+    box-shadow: var(--sombra);
+}
+
+
+.cabecalho-card-gerencial {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+
+.cabecalho-card-gerencial h2 {
+    margin: 0;
+
+    color: var(--cor-principal);
+
+    font-size: 20px;
+}
+
+
+.cabecalho-card-gerencial p {
+    margin: 6px 0 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   GRÁFICO DE FATURAMENTO
+   ========================================= */
+
+.grafico-faturamento {
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, minmax(55px, 1fr));
+
+    align-items: end;
+
+    gap: 12px;
+
+    min-height: 260px;
+
+    padding-top: 10px;
+}
+
+
+.coluna-grafico {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    min-width: 0;
+}
+
+
+.valor-grafico {
+    height: 32px;
+
+    margin-bottom: 6px;
+
+    color: #71717a;
+
+    font-size: 10px;
+    font-weight: 650;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+.area-barra {
+    width: 100%;
+    height: 185px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    padding: 0 7px;
+
+    border-bottom: 1px solid #e4e4e7;
+
+    background:
+        repeating-linear-gradient(
+            to top,
+            transparent,
+            transparent 45px,
+            #f4f4f5 46px
+        );
+}
+
+
+.barra-faturamento {
+    width: 100%;
+
+    max-width: 48px;
+
+    min-height: 4px;
+
+    border-radius: 7px 7px 2px 2px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #e0bc6a 0%,
+            var(--cor-dourada-hover) 100%
+        );
+
+    box-shadow:
+        0 6px 15px rgba(185, 139, 56, 0.18);
+
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease;
+}
+
+
+.barra-faturamento:hover {
+    transform: translateY(-3px);
+
+    filter: brightness(0.95);
+}
+
+
+.mes-grafico {
+    margin-top: 9px;
+
+    color: #71717a;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================
+   RANKING DE SERVIÇOS
+   ========================================= */
+
+.ranking-servicos {
+    display: flex;
+    flex-direction: column;
+
+    gap: 19px;
+}
+
+
+.item-ranking {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.linha-ranking {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+
+.nome-ranking {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+
+    gap: 9px;
+}
+
+
+.nome-ranking strong {
+    overflow: hidden;
+
+    color: #3f3f46;
+
+    font-size: 13px;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.posicao-ranking {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 25px;
+    height: 25px;
+
+    flex-shrink: 0;
+
+    border-radius: 7px;
+
+    background: #faf5e9;
+
+    color: #987229;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+.quantidade-ranking {
+    flex-shrink: 0;
+
+    color: #a1a1aa;
+
+    font-size: 10px;
+}
+
+
+.trilho-ranking {
+    width: 100%;
+    height: 6px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #f1f1f3;
+}
+
+
+.progresso-ranking {
+    height: 100%;
+
+    border-radius: 20px;
+
+    background: var(--cor-dourada);
+}
+
+
+/* =========================================
+   ESTADO SEM DADOS
+   ========================================= */
+
+.estado-vazio-gerencial {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    min-height: 180px;
+
+    padding: 20px;
+
+    border-radius: 13px;
+
+    background: #f8f8f9;
+}
+
+
+.estado-vazio-gerencial > span {
+    font-size: 28px;
+}
+
+
+.estado-vazio-gerencial strong {
+    color: var(--cor-principal);
+
+    font-size: 13px;
+}
+
+
+.estado-vazio-gerencial p {
+    margin: 5px 0 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+   ========================================= */
+
+@media (max-width: 950px) {
+
+    .grid-gerencial {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .card-gerencial {
+        padding: 20px 15px;
+    }
+
+    .grafico-faturamento {
+        gap: 5px;
+
+        overflow-x: auto;
+    }
+
+    .area-barra {
+        padding: 0 3px;
+    }
+
+    .valor-grafico {
+        font-size: 8px;
+    }
+
+    .quantidade-ranking {
+        display: none;
+    }
+
+}
