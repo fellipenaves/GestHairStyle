@@ -274,6 +274,68 @@ if ($maiorQuantidadeServico <= 0) {
     $maiorQuantidadeServico = 1;
 }
 
+/* =========================================
+   RESUMO DO DIA
+   ========================================= */
+
+$sqlResumoHoje = "
+    SELECT
+        SUM(
+            CASE
+                WHEN agend_status = 'confirmado'
+                THEN 1
+                ELSE 0
+            END
+        ) AS confirmados,
+
+        SUM(
+            CASE
+                WHEN agend_status = 'concluido'
+                THEN 1
+                ELSE 0
+            END
+        ) AS concluidos,
+
+        SUM(
+            CASE
+                WHEN agend_status = 'cancelado'
+                THEN 1
+                ELSE 0
+            END
+        ) AS cancelados,
+
+        COALESCE(
+            SUM(
+                CASE
+                    WHEN agend_status = 'concluido'
+                    THEN agend_preco
+                    ELSE 0
+                END
+            ),
+            0
+        ) AS faturamento
+
+    FROM AGENDAMENTO
+
+    WHERE DATE(agend_data_hora) = CURDATE()
+";
+
+$resumoHoje = $conexao
+    ->query($sqlResumoHoje)
+    ->fetch(PDO::FETCH_ASSOC);
+
+$confirmadosHoje =
+    (int) ($resumoHoje['confirmados'] ?? 0);
+
+$concluidosHoje =
+    (int) ($resumoHoje['concluidos'] ?? 0);
+
+$canceladosHoje =
+    (int) ($resumoHoje['cancelados'] ?? 0);
+
+$faturamentoHoje =
+    (float) ($resumoHoje['faturamento'] ?? 0);
+
 ?>
 
 <!DOCTYPE html>
@@ -325,6 +387,8 @@ require 'menu.php';
             Não foi possível excluir o cliente.
         </div>
     <?php endif; ?>
+
+<!-- INDICADORES PRINCIPAIS -->
 
     <div class="grid-resumo">
 
@@ -403,6 +467,106 @@ require 'menu.php';
                 Total de clientes cadastrados
             </small>
         </div>
+    </div>
+
+</div>
+
+<!-- =========================================
+     RESUMO DE HOJE
+     ========================================= -->
+
+<div class="resumo-hoje">
+
+    <div class="cabecalho-resumo-hoje">
+
+        <div>
+            <span class="subtitulo-dashboard">
+                HOJE
+            </span>
+
+            <h2>Resumo do dia</h2>
+
+            <p>
+                Situação atual dos atendimentos de hoje.
+            </p>
+        </div>
+
+        <a
+            href="agendamentos.php?filtro_data=<?= date('Y-m-d') ?>"
+            class="link-ver-todos"
+        >
+            Ver agenda de hoje →
+        </a>
+
+    </div>
+
+
+    <div class="grid-resumo-hoje">
+
+        <div class="item-resumo-hoje">
+
+            <span class="indicador-hoje indicador-confirmado"></span>
+
+            <div>
+                <small>Confirmados</small>
+
+                <strong>
+                    <?= $confirmadosHoje ?>
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="item-resumo-hoje">
+
+            <span class="indicador-hoje indicador-concluido"></span>
+
+            <div>
+                <small>Concluídos</small>
+
+                <strong>
+                    <?= $concluidosHoje ?>
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="item-resumo-hoje">
+
+            <span class="indicador-hoje indicador-cancelado"></span>
+
+            <div>
+                <small>Cancelados</small>
+
+                <strong>
+                    <?= $canceladosHoje ?>
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="item-resumo-hoje faturamento-hoje">
+
+            <span class="indicador-hoje indicador-faturamento"></span>
+
+            <div>
+                <small>Faturamento de hoje</small>
+
+                <strong>
+                    R$ <?= number_format(
+                        $faturamentoHoje,
+                        2,
+                        ',',
+                        '.'
+                    ) ?>
+                </strong>
+            </div>
+
+        </div>
+
     </div>
 
 </div>
