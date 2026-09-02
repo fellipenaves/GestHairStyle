@@ -68,6 +68,40 @@ $consulta->execute($parametros);
 
 $agendamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
+/* =========================================
+   INDICADORES DE STATUS
+   ========================================= */
+
+$contagemStatus = [
+    'pendente' => 0,
+    'confirmado' => 0,
+    'concluido' => 0,
+    'cancelado' => 0
+];
+
+$sqlStatus = "
+    SELECT
+        agend_status,
+        COUNT(*) AS total
+    FROM AGENDAMENTO
+    GROUP BY agend_status
+";
+
+$consultaStatus = $conexao->query($sqlStatus);
+
+$resultadosStatus =
+    $consultaStatus->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($resultadosStatus as $resultado) {
+
+    $status = $resultado['agend_status'];
+
+    if (isset($contagemStatus[$status])) {
+        $contagemStatus[$status] =
+            (int) $resultado['total'];
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +123,129 @@ require 'menu.php';
 ?>
 
 <div class="container">
-    <h1>Agendamentos</h1>
+    
+    <div class="cabecalho-pagina">
+
+    <div>
+
+        <span class="subtitulo-dashboard">
+            AGENDA
+        </span>
+
+        <h1>Agendamentos</h1>
+
+        <p>
+            Acompanhe os atendimentos,
+            horários e status da agenda.
+        </p>
+
+    </div>
+
+
+    <a
+        href="cadastrar_agendamento.php"
+        class="botao-destaque"
+    >
+        + Novo agendamento
+    </a>
+
+</div>
+
+
+<div class="grid-resumo grid-status-agendamentos">
+
+    <div class="card-resumo card-status card-pendente">
+
+        <div class="icone-card">
+            ⏳
+        </div>
+
+        <div class="info-card">
+
+            <span>Pendentes</span>
+
+            <strong>
+                <?= $contagemStatus['pendente'] ?>
+            </strong>
+
+            <small>
+                Aguardando confirmação
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-resumo card-status card-confirmado">
+
+        <div class="icone-card">
+            ✓
+        </div>
+
+        <div class="info-card">
+
+            <span>Confirmados</span>
+
+            <strong>
+                <?= $contagemStatus['confirmado'] ?>
+            </strong>
+
+            <small>
+                Atendimentos confirmados
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-resumo card-status card-concluido">
+
+        <div class="icone-card">
+            ✂️
+        </div>
+
+        <div class="info-card">
+
+            <span>Concluídos</span>
+
+            <strong>
+                <?= $contagemStatus['concluido'] ?>
+            </strong>
+
+            <small>
+                Atendimentos realizados
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-resumo card-status card-cancelado">
+
+        <div class="icone-card">
+            ×
+        </div>
+
+        <div class="info-card">
+
+            <span>Cancelados</span>
+
+            <strong>
+                <?= $contagemStatus['cancelado'] ?>
+            </strong>
+
+            <small>
+                Atendimentos cancelados
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
 
     <?php if (($_GET['status'] ?? '') === 'criado'): ?>
         <div class="mensagem-sucesso">
@@ -111,14 +267,6 @@ require 'menu.php';
             Não foi possível atualizar o status.
         </div>
     <?php endif; ?>
-
-    <a class="botao" href="index.php">
-        Voltar aos clientes
-    </a>
-
-    <a class="botao" href="cadastrar_agendamento.php">
-        Novo agendamento
-    </a>
 
     <form method="GET" class="form-filtros">
     <div class="campo-filtro">

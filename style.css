@@ -2170,3 +2170,95 @@ button:focus-visible {
     }
 
 }
+
+/* =========================================
+   INDICADORES - AGENDAMENTOS
+   ========================================= */
+
+.grid-status-agendamentos {
+    grid-template-columns:
+        repeat(4, 1fr);
+}
+
+
+.card-status {
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+.card-status::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+}
+
+
+/* PENDENTE */
+
+.card-pendente::before {
+    background: #d6a12d;
+}
+
+.card-pendente .icone-card {
+    background: #fef3c7;
+}
+
+
+/* CONFIRMADO */
+
+.card-confirmado::before {
+    background: #3b82f6;
+}
+
+.card-confirmado .icone-card {
+    background: #dbeafe;
+}
+
+
+/* CONCLUÍDO */
+
+.card-concluido::before {
+    background: #22a35a;
+}
+
+.card-concluido .icone-card {
+    background: #dcfce7;
+}
+
+
+/* CANCELADO */
+
+.card-cancelado::before {
+    background: #dc4c4c;
+}
+
+.card-cancelado .icone-card {
+    background: #fee2e2;
+}
+
+
+@media (max-width: 1050px) {
+
+    .grid-status-agendamentos {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .grid-status-agendamentos {
+        grid-template-columns: 1fr;
+    }
+
+}
