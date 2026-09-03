@@ -57,137 +57,146 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <title>Cadastrar cliente | GestHairStyle</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: 40px 20px;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #222;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        h1 {
-            margin-top: 0;
-            color: #17202a;
-        }
-
-        label {
-            display: block;
-            margin-top: 18px;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
-
-        input {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #bbb;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 25px;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            background-color: #17202a;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #2c3e50;
-        }
-
-        .mensagem {
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 5px;
-        }
-
-        .sucesso {
-            color: #155724;
-            background-color: #d4edda;
-        }
-
-        .erro {
-            color: #721c24;
-            background-color: #f8d7da;
-        }
-
-        .voltar {
-            display: inline-block;
-            margin-top: 20px;
-            color: #17202a;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<?php
+$paginaAtual = 'clientes';
+require 'menu.php';
+?>
 
-<div class="container">
-    <h1>Cadastrar cliente</h1>
+<div class="container container-formulario">
+    <div class="cabecalho-formulario">
 
-    <?php if ($mensagem !== ''): ?>
-        <div class="mensagem <?= $tipoMensagem ?>">
-            <?= htmlspecialchars($mensagem) ?>
-        </div>
-    <?php endif; ?>
+    <div>
+
+        <span class="subtitulo-dashboard">
+            CLIENTES
+        </span>
+
+        <h1>Novo cliente</h1>
+
+        <p>
+            Cadastre as informações básicas do cliente
+            para utilizá-lo nos agendamentos.
+        </p>
+
+    </div>
+
+</div>
+
+
+<?php if ($mensagem !== ''): ?>
+
+    <div class="mensagem <?= $tipoMensagem ?>">
+
+        <?= htmlspecialchars($mensagem) ?>
+
+    </div>
+
+<?php endif; ?>
+
+
+<div class="card-formulario">
 
     <form method="POST">
-        <label for="nome">Nome completo</label>
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            required
-        >
 
-        <label for="cpf">CPF</label>
-        <input
-            type="text"
-            id="cpf"
-            name="cpf"
-            maxlength="14"
-            placeholder="Somente números"
-            required
-        >
+        <div class="grid-formulario">
 
-        <label for="telefone">Telefone</label>
-        <input
-            type="text"
-            id="telefone"
-            name="telefone"
-            placeholder="(19) 99999-9999"
-        >
+            <div class="campo-formulario campo-formulario-grande">
 
-        <label for="data_nascimento">Data de nascimento</label>
-        <input
-            type="date"
-            id="data_nascimento"
-            name="data_nascimento"
-        >
+                <label for="nome">
+                    Nome completo
+                </label>
 
-        <button type="submit">Cadastrar cliente</button>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Digite o nome completo"
+                    value="<?= htmlspecialchars($_POST['nome'] ?? '') ?>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campo-formulario">
+
+                <label for="cpf">
+                    CPF
+                </label>
+
+                <input
+                    type="text"
+                    id="cpf"
+                    name="cpf"
+                    maxlength="14"
+                    placeholder="000.000.000-00"
+                    value="<?= htmlspecialchars($_POST['cpf'] ?? '') ?>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campo-formulario">
+
+                <label for="telefone">
+                    Telefone
+                </label>
+
+                <input
+                    type="text"
+                    id="telefone"
+                    name="telefone"
+                    placeholder="(19) 99999-9999"
+                    value="<?= htmlspecialchars($_POST['telefone'] ?? '') ?>"
+                >
+
+            </div>
+
+
+            <div class="campo-formulario">
+
+                <label for="data_nascimento">
+                    Data de nascimento
+                </label>
+
+                <input
+                    type="date"
+                    id="data_nascimento"
+                    name="data_nascimento"
+                    value="<?= htmlspecialchars(
+                        $_POST['data_nascimento'] ?? ''
+                    ) ?>"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="acoes-formulario">
+
+            <a
+                href="clientes.php"
+                class="botao-secundario"
+            >
+                Cancelar
+            </a>
+
+            <button
+                type="submit"
+                class="botao-destaque botao-salvar"
+            >
+                Cadastrar cliente
+            </button>
+
+        </div>
+
     </form>
 
-    <a class="voltar" href="index.php">← Voltar para a lista</a>
 </div>
 
 </body>
