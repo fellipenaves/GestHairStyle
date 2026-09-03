@@ -5,8 +5,10 @@ require_once 'conexao.php';
 $mensagem = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $nome = trim($_POST['nome'] ?? '');
     $descricao = trim($_POST['descricao'] ?? '');
+
     $duracao = filter_input(
         INPUT_POST,
         'duracao',
@@ -24,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         FILTER_VALIDATE_FLOAT
     );
 
+
     if (
         $nome === '' ||
         !$duracao ||
@@ -31,9 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $preco === false ||
         $preco < 0
     ) {
-        $mensagem = 'Preencha corretamente todos os campos obrigatórios.';
+
+        $mensagem =
+            'Preencha corretamente todos os campos obrigatórios.';
+
     } else {
+
         try {
+
             $comando = $conexao->prepare(
                 'INSERT INTO SERVICO (
                     serv_nome,
@@ -51,16 +59,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $comando->execute([
                 ':nome' => $nome,
-                ':descricao' => $descricao !== '' ? $descricao : null,
+
+                ':descricao' =>
+                    $descricao !== ''
+                        ? $descricao
+                        : null,
+
                 ':duracao' => $duracao,
+
                 ':preco' => $preco
             ]);
 
-            header('Location: servicos.php?status=criado');
+            header(
+                'Location: servicos.php?status=criado'
+            );
+
             exit;
 
         } catch (PDOException $erro) {
-            $mensagem = 'Não foi possível cadastrar o serviço.';
+
+            $mensagem =
+                'Não foi possível cadastrar o serviço.';
         }
     }
 }
@@ -68,147 +87,234 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Novo serviço | GestHairStyle</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <title>
+        Novo serviço | GestHairStyle
+    </title>
 
-        body {
-            margin: 0;
-            padding: 40px 20px;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #222;
-        }
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        h1 {
-            margin-top: 0;
-            color: #17202a;
-        }
-
-        label {
-            display: block;
-            margin-top: 18px;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #bbb;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-        }
-
-        textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 25px;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            background-color: #17202a;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #2c3e50;
-        }
-
-        .erro {
-            margin-bottom: 20px;
-            padding: 12px;
-            border-radius: 5px;
-            color: #721c24;
-            background-color: #f8d7da;
-        }
-
-        .voltar {
-            display: inline-block;
-            margin-top: 20px;
-            color: #17202a;
-        }
-    </style>
 </head>
+
 
 <body>
 
-<div class="container">
-    <h1>Novo serviço</h1>
+<?php
+
+$paginaAtual = 'servicos';
+
+require 'menu.php';
+
+?>
+
+
+<div class="container container-formulario">
+
+
+    <!-- CABEÇALHO -->
+
+    <div class="cabecalho-formulario">
+
+        <div>
+
+            <span class="subtitulo-dashboard">
+                SERVIÇOS
+            </span>
+
+            <h1>Novo serviço</h1>
+
+            <p>
+                Cadastre um serviço oferecido pela barbearia,
+                informando duração e valor.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- MENSAGEM DE ERRO -->
 
     <?php if ($mensagem !== ''): ?>
-        <div class="erro">
+
+        <div class="mensagem erro">
+
             <?= htmlspecialchars($mensagem) ?>
+
         </div>
+
     <?php endif; ?>
 
-    <form method="POST">
-        <label for="nome">Nome do serviço</label>
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            required
-        >
 
-        <label for="descricao">Descrição</label>
-        <textarea
-            id="descricao"
-            name="descricao"
-        ></textarea>
+    <!-- FORMULÁRIO -->
 
-        <label for="duracao">Duração em minutos</label>
-        <input
-            type="number"
-            id="duracao"
-            name="duracao"
-            min="1"
-            required
-        >
+    <div class="card-formulario">
 
-        <label for="preco">Preço</label>
-        <input
-            type="number"
-            id="preco"
-            name="preco"
-            min="0"
-            step="0.01"
-            placeholder="0,00"
-            required
-        >
+        <form method="POST">
 
-        <button type="submit">Cadastrar serviço</button>
-    </form>
 
-    <a class="voltar" href="servicos.php">
-        ← Voltar aos serviços
-    </a>
+            <div class="grid-formulario">
+
+
+                <!-- NOME -->
+
+                <div
+                    class="
+                        campo-formulario
+                        campo-formulario-grande
+                    "
+                >
+
+                    <label for="nome">
+                        Nome do serviço
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        placeholder="Ex.: Corte masculino"
+                        value="<?= htmlspecialchars(
+                            $_POST['nome'] ?? ''
+                        ) ?>"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESCRIÇÃO -->
+
+                <div
+                    class="
+                        campo-formulario
+                        campo-formulario-grande
+                    "
+                >
+
+                    <label for="descricao">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        class="textarea-servico"
+                        placeholder="Descreva brevemente o serviço..."
+                    ><?= htmlspecialchars(
+                        $_POST['descricao'] ?? ''
+                    ) ?></textarea>
+
+                    <small class="ajuda-campo">
+                        Campo opcional.
+                    </small>
+
+                </div>
+
+
+                <!-- DURAÇÃO -->
+
+                <div class="campo-formulario">
+
+                    <label for="duracao">
+                        Duração
+                    </label>
+
+                    <input
+                        type="number"
+                        id="duracao"
+                        name="duracao"
+                        min="1"
+                        placeholder="Ex.: 45"
+                        value="<?= htmlspecialchars(
+                            $_POST['duracao'] ?? ''
+                        ) ?>"
+                        required
+                    >
+
+                    <small class="ajuda-campo">
+                        Informe o tempo em minutos.
+                    </small>
+
+                </div>
+
+
+                <!-- PREÇO -->
+
+                <div class="campo-formulario">
+
+                    <label for="preco">
+                        Preço
+                    </label>
+
+                    <input
+                        type="number"
+                        id="preco"
+                        name="preco"
+                        min="0"
+                        step="0.01"
+                        placeholder="0,00"
+                        value="<?= htmlspecialchars(
+                            $_POST['preco'] ?? ''
+                        ) ?>"
+                        required
+                    >
+
+                    <small class="ajuda-campo">
+                        Valor cobrado pelo serviço.
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- AÇÕES -->
+
+            <div class="acoes-formulario">
+
+                <a
+                    href="servicos.php"
+                    class="botao-secundario"
+                >
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="
+                        botao-destaque
+                        botao-salvar
+                    "
+                >
+                    Cadastrar serviço
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+
 </div>
 
 </body>
+
 </html>

@@ -2778,3 +2778,24 @@ button:focus-visible {
     }
 
 }
+
+/* =========================================
+   CAMPOS EXTRAS DOS FORMULÁRIOS
+   ========================================= */
+
+.textarea-servico {
+    min-height: 120px;
+
+    resize: vertical;
+
+    line-height: 1.5;
+}
+
+
+.ajuda-campo {
+    color: #a1a1aa;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
