@@ -3,7 +3,100 @@
 require_once 'conexao.php';
 
 $filtroData = trim($_GET['filtro_data'] ?? '');
+
 $filtroStatus = trim($_GET['filtro_status'] ?? '');
+
+$filtroBarbeiro = filter_input(
+    INPUT_GET,
+    'filtro_barbeiro',
+    FILTER_VALIDATE_INT
+);
+
+$listaBarbeiros = $conexao
+    ->query(
+        'SELECT barb_id, barb_nome
+         FROM BARBEIRO
+         ORDER BY barb_nome'
+    )
+    ->fetchAll(PDO::FETCH_ASSOC);
+
+    /* =========================================
+   VISÃO DA AGENDA POR PROFISSIONAL
+   ========================================= */
+
+$dataReferencia =
+    (
+        $filtroData !== '' &&
+        preg_match(
+            '/^\d{4}-\d{2}-\d{2}$/',
+            $filtroData
+        )
+    )
+        ? $filtroData
+        : date('Y-m-d');
+
+
+$sqlAgendaProfissionais = "
+    SELECT
+        b.barb_id,
+        b.barb_nome,
+
+        COUNT(a.agend_id)
+            AS total_agendamentos,
+
+        SUM(
+            CASE
+                WHEN a.agend_status = 'pendente'
+                THEN 1
+                ELSE 0
+            END
+        ) AS pendentes,
+
+        SUM(
+            CASE
+                WHEN a.agend_status = 'confirmado'
+                THEN 1
+                ELSE 0
+            END
+        ) AS confirmados,
+
+        SUM(
+            CASE
+                WHEN a.agend_status = 'concluido'
+                THEN 1
+                ELSE 0
+            END
+        ) AS concluidos
+
+    FROM BARBEIRO AS b
+
+    LEFT JOIN AGENDAMENTO AS a
+        ON a.barb_id = b.barb_id
+        AND DATE(a.agend_data_hora) = :data_referencia
+        AND a.agend_status <> 'cancelado'
+
+    GROUP BY
+        b.barb_id,
+        b.barb_nome
+
+    ORDER BY
+        total_agendamentos DESC,
+        b.barb_nome
+";
+
+$consultaAgendaProfissionais =
+    $conexao->prepare(
+        $sqlAgendaProfissionais
+    );
+
+$consultaAgendaProfissionais->execute([
+    ':data_referencia' =>
+        $dataReferencia
+]);
+
+$agendaProfissionais =
+    $consultaAgendaProfissionais
+        ->fetchAll(PDO::FETCH_ASSOC);
 
 $statusPermitidos = [
     'pendente',
@@ -50,6 +143,11 @@ if (
 if (in_array($filtroStatus, $statusPermitidos, true)) {
     $sql .= ' AND a.agend_status = :filtro_status';
     $parametros[':filtro_status'] = $filtroStatus;
+}
+
+if ($filtroBarbeiro) {
+    $sql .= ' AND a.barb_id = :filtro_barbeiro';
+    $parametros[':filtro_barbeiro'] = $filtroBarbeiro;
 }
 
 $sql .= "
@@ -247,6 +345,149 @@ require 'menu.php';
 
 </div>
 
+<!-- =========================================
+     AGENDA POR PROFISSIONAL
+     ========================================= -->
+
+<div class="painel-profissionais">
+
+    <div class="cabecalho-agenda-profissionais">
+
+        <div>
+
+            <span class="subtitulo-dashboard">
+                PROFISSIONAIS
+            </span>
+
+            <h2>Agenda por barbeiro</h2>
+
+            <p>
+                Visão dos atendimentos para
+                <?= date(
+                    'd/m/Y',
+                    strtotime($dataReferencia)
+                ) ?>.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid-profissionais">
+
+        <?php foreach (
+            $agendaProfissionais as $profissional
+        ): ?>
+
+            <?php
+
+$parametrosProfissional = [
+    'filtro_data' => $dataReferencia,
+    'filtro_barbeiro' => (int) $profissional['barb_id']
+];
+
+if (
+    $filtroStatus !== '' &&
+    in_array(
+        $filtroStatus,
+        $statusPermitidos,
+        true
+    )
+) {
+    $parametrosProfissional['filtro_status'] =
+        $filtroStatus;
+}
+
+$linkProfissional =
+    'agendamentos.php?'
+    . http_build_query($parametrosProfissional);
+
+?>
+
+<a
+    href="<?= htmlspecialchars($linkProfissional) ?>"
+    class="card-profissional"
+>
+
+                <div class="topo-card-profissional">
+
+                    <div class="avatar-profissional">
+                        ✂
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            <?= htmlspecialchars(
+                                $profissional['barb_nome']
+                            ) ?>
+                        </strong>
+
+                        <small>
+                            <?= (int)
+                                $profissional[
+                                    'total_agendamentos'
+                                ]
+                            ?>
+                            atendimento<?= (int)
+                                $profissional[
+                                    'total_agendamentos'
+                                ] !== 1
+                                    ? 's'
+                                    : ''
+                            ?>
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="status-profissional">
+
+                    <span>
+                        <small>Pend.</small>
+
+                        <strong>
+                            <?= (int)
+                                $profissional['pendentes']
+                            ?>
+                        </strong>
+                    </span>
+
+
+                    <span>
+                        <small>Conf.</small>
+
+                        <strong>
+                            <?= (int)
+                                $profissional['confirmados']
+                            ?>
+                        </strong>
+                    </span>
+
+
+                    <span>
+                        <small>Concl.</small>
+
+                        <strong>
+                            <?= (int)
+                                $profissional['concluidos']
+                            ?>
+                        </strong>
+                    </span>
+
+                </div>
+
+            </a>
+
+        <?php endforeach; ?>
+
+    </div>
+
+</div>
+
     <?php if (($_GET['status'] ?? '') === 'criado'): ?>
         <div class="mensagem-sucesso">
             Agendamento criado com sucesso!
@@ -315,6 +556,44 @@ require 'menu.php';
             </option>
         </select>
     </div>
+
+    <div class="campo-filtro">
+
+    <label for="filtro_barbeiro">
+        Barbeiro
+    </label>
+
+    <select
+        id="filtro_barbeiro"
+        name="filtro_barbeiro"
+    >
+
+        <option value="">
+            Todos
+        </option>
+
+        <?php foreach ($listaBarbeiros as $barbeiro): ?>
+
+            <option
+                value="<?= (int) $barbeiro['barb_id'] ?>"
+                <?= (int) $filtroBarbeiro ===
+                    (int) $barbeiro['barb_id']
+                    ? 'selected'
+                    : ''
+                ?>
+            >
+
+                <?= htmlspecialchars(
+                    $barbeiro['barb_nome']
+                ) ?>
+
+            </option>
+
+        <?php endforeach; ?>
+
+    </select>
+
+</div>
 
     <button type="submit" class="botao-filtrar">
         Filtrar

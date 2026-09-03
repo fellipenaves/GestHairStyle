@@ -2851,3 +2851,189 @@ button:focus-visible {
     }
 
 }
+
+/* =========================================
+   AGENDA POR PROFISSIONAL
+   ========================================= */
+
+.painel-profissionais {
+    margin-bottom: 25px;
+
+    padding: 24px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 17px;
+
+    box-shadow: var(--sombra);
+}
+
+
+.cabecalho-agenda-profissionais {
+    margin-bottom: 18px;
+}
+
+
+.cabecalho-agenda-profissionais h2 {
+    margin: 0;
+
+    color: var(--cor-principal);
+
+    font-size: 20px;
+}
+
+
+.cabecalho-agenda-profissionais p {
+    margin: 5px 0 0;
+
+    color: var(--texto-secundario);
+
+    font-size: 12px;
+}
+
+
+/* GRID */
+
+.grid-profissionais {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(210px, 1fr)
+        );
+
+    gap: 12px;
+}
+
+
+/* CARD */
+
+.card-profissional {
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+
+    padding: 17px;
+
+    border: 1px solid var(--borda);
+    border-radius: 13px;
+
+    background: #fafafa;
+
+    color: inherit;
+
+    text-decoration: none;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.card-profissional:hover {
+    transform: translateY(-3px);
+
+    border-color: #ded1b3;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.07);
+}
+
+
+/* TOPO */
+
+.topo-card-profissional {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+}
+
+
+.avatar-profissional {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    background: var(--cor-principal);
+    color: var(--cor-dourada);
+
+    font-size: 17px;
+}
+
+
+.topo-card-profissional > div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.topo-card-profissional strong {
+    color: var(--cor-principal);
+
+    font-size: 13px;
+}
+
+
+.topo-card-profissional small {
+    margin-top: 3px;
+
+    color: #8b8b92;
+
+    font-size: 10px;
+}
+
+
+/* CONTADORES */
+
+.status-profissional {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 6px;
+}
+
+
+.status-profissional > span {
+    display: flex;
+    flex-direction: column;
+
+    padding: 8px;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    text-align: center;
+}
+
+
+.status-profissional small {
+    color: #a1a1aa;
+
+    font-size: 9px;
+
+    text-transform: uppercase;
+}
+
+
+.status-profissional strong {
+    margin-top: 3px;
+
+    color: #3f3f46;
+
+    font-size: 15px;
+}
