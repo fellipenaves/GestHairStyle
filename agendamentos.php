@@ -12,6 +12,10 @@ $filtroBarbeiro = filter_input(
     FILTER_VALIDATE_INT
 );
 
+$filtroCliente = trim(
+    $_GET['filtro_cliente'] ?? ''
+);
+
 $listaBarbeiros = $conexao
     ->query(
         'SELECT barb_id, barb_nome
@@ -150,6 +154,16 @@ if ($filtroBarbeiro) {
     $parametros[':filtro_barbeiro'] = $filtroBarbeiro;
 }
 
+if ($filtroCliente !== '') {
+
+    $sql .= '
+        AND c.cli_nome LIKE :filtro_cliente
+    ';
+
+    $parametros[':filtro_cliente'] =
+        '%' . $filtroCliente . '%';
+}
+
 $sql .= "
     GROUP BY
         a.agend_id,
@@ -199,6 +213,54 @@ foreach ($resultadosStatus as $resultado) {
             (int) $resultado['total'];
     }
 }
+
+/* =========================================
+   LINKS DOS CARDS DE STATUS
+   Preservam os demais filtros
+   ========================================= */
+
+$criarLinkStatus = function ($status) use (
+    $filtroData,
+    $filtroBarbeiro,
+    $filtroCliente
+) {
+
+    $parametros = [
+        'filtro_status' => $status
+    ];
+
+
+    if (
+        $filtroData !== '' &&
+        preg_match(
+            '/^\d{4}-\d{2}-\d{2}$/',
+            $filtroData
+        )
+    ) {
+
+        $parametros['filtro_data'] =
+            $filtroData;
+    }
+
+
+    if ($filtroBarbeiro) {
+
+        $parametros['filtro_barbeiro'] =
+            $filtroBarbeiro;
+    }
+
+
+    if ($filtroCliente !== '') {
+
+        $parametros['filtro_cliente'] =
+            $filtroCliente;
+    }
+
+
+    return
+        'agendamentos.php?'
+        . http_build_query($parametros);
+};
 
 ?>
 
@@ -253,7 +315,9 @@ require 'menu.php';
 <div class="grid-resumo grid-status-agendamentos">
 
     <a
-    href="agendamentos.php?filtro_status=pendente"
+    href="<?= htmlspecialchars(
+    $criarLinkStatus('pendente')
+) ?>"
     class="card-resumo card-status card-pendente link-card-status
         <?= $filtroStatus === 'pendente' ? 'status-ativo' : '' ?>"
 >
@@ -276,7 +340,9 @@ require 'menu.php';
 
 
     <a
-    href="agendamentos.php?filtro_status=confirmado"
+    href="<?= htmlspecialchars(
+    $criarLinkStatus('confirmado')
+) ?>"
     class="card-resumo card-status card-confirmado link-card-status
         <?= $filtroStatus === 'confirmado' ? 'status-ativo' : '' ?>"
 >
@@ -299,7 +365,9 @@ require 'menu.php';
 
 
     <a
-    href="agendamentos.php?filtro_status=concluido"
+    href="<?= htmlspecialchars(
+    $criarLinkStatus('concluido')
+) ?>"
     class="card-resumo card-status card-concluido link-card-status
         <?= $filtroStatus === 'concluido' ? 'status-ativo' : '' ?>"
 >
@@ -322,7 +390,9 @@ require 'menu.php';
 
 
     <a
-    href="agendamentos.php?filtro_status=cancelado"
+    href="<?= htmlspecialchars(
+    $criarLinkStatus('cancelado')
+) ?>"
     class="card-resumo card-status card-cancelado link-card-status
         <?= $filtroStatus === 'cancelado' ? 'status-ativo' : '' ?>"
 >
@@ -592,6 +662,24 @@ $linkProfissional =
         <?php endforeach; ?>
 
     </select>
+
+</div>
+
+<div class="campo-filtro campo-filtro-cliente">
+
+    <label for="filtro_cliente">
+        Cliente
+    </label>
+
+    <input
+        type="text"
+        id="filtro_cliente"
+        name="filtro_cliente"
+        placeholder="Digite o nome..."
+        value="<?= htmlspecialchars(
+            $filtroCliente
+        ) ?>"
+    >
 
 </div>
 

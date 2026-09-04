@@ -3037,3 +3037,21 @@ button:focus-visible {
 
     font-size: 15px;
 }
+
+/* =========================================
+   BUSCA DE CLIENTE NA AGENDA
+   ========================================= */
+
+.campo-filtro-cliente input {
+    min-width: 220px;
+}
+
+
+@media (max-width: 700px) {
+
+    .campo-filtro-cliente input {
+        width: 100%;
+        min-width: 0;
+    }
+
+}
