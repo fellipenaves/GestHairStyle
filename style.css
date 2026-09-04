@@ -3055,3 +3055,119 @@ button:focus-visible {
     }
 
 }
+
+/* =========================================
+   HORÁRIOS DISPONÍVEIS
+   ========================================= */
+
+.bloco-horarios {
+    padding: 18px;
+
+    border: 1px solid var(--borda);
+    border-radius: 13px;
+
+    background: #fafafa;
+}
+
+
+.cabecalho-horarios {
+    margin-bottom: 14px;
+}
+
+
+.lista-horarios {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(90px, 1fr)
+        );
+
+    gap: 9px;
+}
+
+
+.botao-horario {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 3px;
+
+    min-height: 58px;
+
+    padding: 8px;
+
+    border: 1px solid #dedede;
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: var(--cor-principal);
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+
+.botao-horario strong {
+    font-size: 14px;
+}
+
+
+.botao-horario small {
+    color: #9a9aa0;
+
+    font-size: 9px;
+}
+
+
+.botao-horario:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--cor-dourada);
+
+    background: #fdf9ef;
+}
+
+
+.botao-horario.horario-selecionado {
+    border-color: var(--cor-dourada);
+
+    background: #faf1dc;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(212, 168, 83, 0.15);
+}
+
+
+.mensagem-horarios {
+    grid-column: 1 / -1;
+
+    padding: 14px;
+
+    border-radius: 9px;
+
+    background: #f4f4f5;
+    color: #71717a;
+
+    font-size: 12px;
+
+    text-align: center;
+}
+
+
+.erro-horarios {
+    color: #991b1b;
+
+    background: #fee2e2;
+}
