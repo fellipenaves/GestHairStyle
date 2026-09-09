@@ -1,5 +1,9 @@
 <?php
 
+date_default_timezone_set(
+    'America/Sao_Paulo'
+);
+
 $config = require __DIR__ . '/config.php';
 
 try {

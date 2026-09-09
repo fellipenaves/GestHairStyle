@@ -3935,3 +3935,37 @@ button:focus-visible {
 
     color: var(--cor-principal);
 }
+
+/* =========================================
+   HORÁRIOS ENCERRADOS
+   ========================================= */
+
+.horario-dia-encerrado {
+    background: #f7f7f8;
+}
+
+
+.horario-dia-encerrado
+.conteudo-grade-dia {
+    display: flex;
+
+    align-items: center;
+
+    padding: 10px 14px;
+}
+
+
+.indicador-encerrado {
+    color: #b0b0b5;
+
+    font-size: 11px;
+
+    font-weight: 500;
+}
+
+
+.indicador-encerrado::before {
+    content: "—";
+
+    margin-right: 6px;
+}

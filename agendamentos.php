@@ -856,6 +856,12 @@ $linkProfissional =
 
 
                     <div class="grade-horarios-dia">
+                
+                    <?php
+
+                    $agoraGrade = new DateTime();
+
+                    ?>
 
     <?php foreach ($horariosGrade as $horaGrade): ?>
 
@@ -868,6 +874,19 @@ $linkProfissional =
         $fimSlot = clone $inicioSlot;
 
         $fimSlot->modify('+30 minutes');
+
+        $horarioPassou =
+    (
+        $dataReferencia <
+        $agoraGrade->format('Y-m-d')
+    )
+    ||
+    (
+        $dataReferencia ===
+        $agoraGrade->format('Y-m-d')
+        &&
+        $inicioSlot <= $agoraGrade
+    );
 
 
         $atendimentoNoHorario = null;
@@ -1059,7 +1078,31 @@ $linkProfissional =
                 </div>
 
             </div>
+        
+        <?php elseif ($horarioPassou): ?>
 
+    <div class="
+        linha-horario-dia
+        horario-dia-encerrado
+    ">
+
+        <div class="hora-grade-dia">
+
+            <?= htmlspecialchars(
+                $horaGrade
+            ) ?>
+
+        </div>
+
+        <div class="conteudo-grade-dia">
+
+            <span class="indicador-encerrado">
+                Encerrado
+            </span>
+
+        </div>
+
+    </div>
 
         <?php else: ?>
 
