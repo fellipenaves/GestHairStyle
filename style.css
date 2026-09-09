@@ -4060,3 +4060,116 @@ button:focus-visible {
 
     font-weight: 700;
 }
+
+/* =========================================
+   AÇÕES RÁPIDAS DA AGENDA
+   ========================================= */
+
+.acoes-grade-agenda {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-top: 7px;
+}
+
+
+.form-acao-grade {
+    margin: 0;
+}
+
+
+.botao-acao-grade {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 9px;
+
+    border: none;
+    border-radius: 7px;
+
+    font-family: inherit;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+
+.botao-acao-grade:hover {
+    transform: translateY(-1px);
+
+    opacity: 0.88;
+}
+
+
+/* Confirmar */
+
+.botao-confirmar-grade {
+    background: #e7f0ff;
+
+    color: #1d4ed8;
+}
+
+
+/* Concluir */
+
+.botao-concluir-grade {
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+
+/* Cancelar */
+
+.botao-cancelar-grade {
+    background: #fee2e2;
+
+    color: #991b1b;
+}
+
+
+/* Editar */
+
+.acoes-grade-agenda
+.link-grade-editar {
+    position: static;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    background: #f0f0f0;
+
+    color: #27272a;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+.acoes-grade-agenda
+.link-grade-editar:hover {
+    background: #e5e5e5;
+
+    text-decoration: none;
+}

@@ -1040,7 +1040,242 @@ $linkProfissional =
                         ) ?>
 
                     </small>
+                    
+                    <div class="acoes-grade-agenda">
 
+    <?php if (
+        $atendimentoNoHorario[
+            'agend_status'
+        ] === 'pendente'
+    ): ?>
+
+        <form
+            action="atualizar_status_agendamento.php"
+            method="POST"
+            class="form-acao-grade"
+        >
+
+            <input
+                type="hidden"
+                name="id"
+                value="<?= (int)
+                    $atendimentoNoHorario[
+                        'agend_id'
+                    ]
+                ?>"
+            >
+
+            <input
+                type="hidden"
+                name="status"
+                value="confirmado"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_data"
+                value="<?= htmlspecialchars(
+                    $filtroData
+                ) ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_status"
+                value="<?= htmlspecialchars(
+                    $filtroStatus
+                ) ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_barbeiro"
+                value="<?= $filtroBarbeiro
+                    ? (int) $filtroBarbeiro
+                    : ''
+                ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_cliente"
+                value="<?= htmlspecialchars(
+                    $filtroCliente
+                ) ?>"
+            >
+
+            <button
+                type="submit"
+                class="
+                    botao-acao-grade
+                    botao-confirmar-grade
+                "
+            >
+                Confirmar
+            </button>
+
+        </form>
+
+    <?php endif; ?>
+
+
+    <?php if (
+        $atendimentoNoHorario[
+            'agend_status'
+        ] === 'confirmado'
+    ): ?>
+
+        <form
+            action="atualizar_status_agendamento.php"
+            method="POST"
+            class="form-acao-grade"
+        >
+
+            <input
+                type="hidden"
+                name="id"
+                value="<?= (int)
+                    $atendimentoNoHorario[
+                        'agend_id'
+                    ]
+                ?>"
+            >
+
+            <input
+                type="hidden"
+                name="status"
+                value="concluido"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_data"
+                value="<?= htmlspecialchars(
+                    $filtroData
+                ) ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_status"
+                value="<?= htmlspecialchars(
+                    $filtroStatus
+                ) ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_barbeiro"
+                value="<?= $filtroBarbeiro
+                    ? (int) $filtroBarbeiro
+                    : ''
+                ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_cliente"
+                value="<?= htmlspecialchars(
+                    $filtroCliente
+                ) ?>"
+            >
+
+            <button
+                type="submit"
+                class="
+                    botao-acao-grade
+                    botao-concluir-grade
+                "
+            >
+                Concluir
+            </button>
+
+        </form>
+
+    <?php endif; ?>
+
+
+    <?php if (
+        in_array(
+            $atendimentoNoHorario[
+                'agend_status'
+            ],
+            [
+                'pendente',
+                'confirmado'
+            ],
+            true
+        )
+    ): ?>
+
+        <form
+            action="atualizar_status_agendamento.php"
+            method="POST"
+            class="form-acao-grade"
+        >
+
+            <input
+                type="hidden"
+                name="id"
+                value="<?= (int)
+                    $atendimentoNoHorario[
+                        'agend_id'
+                    ]
+                ?>"
+            >
+
+            <input
+                type="hidden"
+                name="status"
+                value="cancelado"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_data"
+                value="<?= htmlspecialchars(
+                    $filtroData
+                ) ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_status"
+                value="<?= htmlspecialchars(
+                    $filtroStatus
+                ) ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_barbeiro"
+                value="<?= $filtroBarbeiro
+                    ? (int) $filtroBarbeiro
+                    : ''
+                ?>"
+            >
+
+            <input
+                type="hidden"
+                name="filtro_cliente"
+                value="<?= htmlspecialchars(
+                    $filtroCliente
+                ) ?>"
+            >
+
+            <button
+                type="submit"
+                class="
+                    botao-acao-grade
+                    botao-cancelar-grade
+                "
+            >
+                Cancelar
+            </button>
+
+        </form>
+
+    <?php endif; ?>
 
                     <a
                         href="editar_agendamento.php?id=<?= (int)
@@ -1057,6 +1292,7 @@ $linkProfissional =
 
             </div>
 
+        </div>
 
         <?php elseif ($atendimentoNoHorario): ?>
 
@@ -1402,6 +1638,39 @@ $linkProfissional =
                                     name="id"
                                     value="<?= (int) $agendamento['agend_id'] ?>"
                                 >
+
+                                <input
+    type="hidden"
+    name="filtro_data"
+    value="<?= htmlspecialchars(
+        $filtroData
+    ) ?>"
+>
+
+<input
+    type="hidden"
+    name="filtro_status"
+    value="<?= htmlspecialchars(
+        $filtroStatus
+    ) ?>"
+>
+
+<input
+    type="hidden"
+    name="filtro_barbeiro"
+    value="<?= $filtroBarbeiro
+        ? (int) $filtroBarbeiro
+        : ''
+    ?>"
+>
+
+<input
+    type="hidden"
+    name="filtro_cliente"
+    value="<?= htmlspecialchars(
+        $filtroCliente
+    ) ?>"
+>
 
                                 <select name="status">
                                     <?php
