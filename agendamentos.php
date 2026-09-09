@@ -39,6 +39,35 @@ $dataReferencia =
         ? $filtroData
         : date('Y-m-d');
 
+/* =========================================
+   HORÁRIOS DA GRADE DIÁRIA
+   ========================================= */
+
+$horariosGrade = [];
+
+$inicioGrade =
+    new DateTime(
+        $dataReferencia . ' 08:00'
+    );
+
+$fimGrade =
+    new DateTime(
+        $dataReferencia . ' 21:00'
+    );
+
+$horarioGrade =
+    clone $inicioGrade;
+
+
+while ($horarioGrade < $fimGrade) {
+
+    $horariosGrade[] =
+        $horarioGrade->format('H:i');
+
+    $horarioGrade->modify(
+        '+30 minutes'
+    );
+}
 
 $sqlAgendaProfissionais = "
     SELECT
@@ -823,136 +852,268 @@ $linkProfissional =
                     </div>
 
 
-                    <div class="lista-agenda-dia">
+                    <div class="grade-horarios-dia">
+
+    <?php foreach ($horariosGrade as $horaGrade): ?>
+
+        <?php
+
+        $inicioSlot = new DateTime(
+            $dataReferencia . ' ' . $horaGrade
+        );
+
+        $fimSlot = clone $inicioSlot;
+
+        $fimSlot->modify('+30 minutes');
 
 
-                        <?php foreach (
-                            $barbeiroVisual[
-                                'atendimentos'
-                            ]
-                            as $atendimentoVisual
-                        ): ?>
+        $atendimentoNoHorario = null;
+
+        $inicioAtendimentoNesteHorario = false;
 
 
-                            <div class="item-agenda-dia">
+        foreach (
+            $barbeiroVisual['atendimentos']
+            as $atendimentoGrade
+        ) {
+
+            $inicioAtendimento =
+                new DateTime(
+                    $atendimentoGrade[
+                        'agend_data_hora'
+                    ]
+                );
+
+            $fimAtendimento =
+                new DateTime(
+                    $atendimentoGrade[
+                        'agend_tempo_final'
+                    ]
+                );
 
 
-                                <div class="horario-agenda-dia">
+            if (
+                $inicioAtendimento < $fimSlot &&
+                $fimAtendimento > $inicioSlot
+            ) {
 
-                                    <strong>
-                                        <?= date(
-                                            'H:i',
-                                            strtotime(
-                                                $atendimentoVisual[
-                                                    'agend_data_hora'
-                                                ]
-                                            )
-                                        ) ?>
-                                    </strong>
-
-                                    <span>
-                                        até
-                                        <?= date(
-                                            'H:i',
-                                            strtotime(
-                                                $atendimentoVisual[
-                                                    'agend_tempo_final'
-                                                ]
-                                            )
-                                        ) ?>
-                                    </span>
-
-                                </div>
+                $atendimentoNoHorario =
+                    $atendimentoGrade;
 
 
-                                <div class="dados-agenda-dia">
-
-                                    <strong>
-                                        <?= htmlspecialchars(
-                                            $atendimentoVisual[
-                                                'cli_nome'
-                                            ]
-                                        ) ?>
-                                    </strong>
+                $inicioAtendimentoNesteHorario =
+                    (
+                        $inicioAtendimento >= $inicioSlot &&
+                        $inicioAtendimento < $fimSlot
+                    );
 
 
-                                    <span>
-                                        <?= htmlspecialchars(
-                                            $atendimentoVisual[
-                                                'servicos'
-                                            ]
-                                            ??
-                                            'Serviço não informado'
-                                        ) ?>
-                                    </span>
+                break;
+            }
+        }
+
+        ?>
 
 
-                                    <div class="rodape-item-agenda">
+        <?php if (
+            $atendimentoNoHorario &&
+            $inicioAtendimentoNesteHorario
+        ): ?>
 
-                                        <span
-                                            class="status <?= htmlspecialchars(
-                                                $atendimentoVisual[
-                                                    'agend_status'
-                                                ]
-                                            ) ?>"
-                                        >
+            <div class="
+                linha-horario-dia
+                horario-dia-ocupado
+            ">
 
-                                            <?= ucfirst(
-                                                htmlspecialchars(
-                                                    $atendimentoVisual[
-                                                        'agend_status'
-                                                    ]
-                                                )
-                                            ) ?>
+                <div class="hora-grade-dia">
 
-                                        </span>
-
-
-                                        <a
-                                            href="editar_agendamento.php?id=<?= (int)
-                                                $atendimentoVisual[
-                                                    'agend_id'
-                                                ]
-                                            ?>"
-                                            class="link-agenda-dia"
-                                        >
-                                            Editar
-                                        </a>
-
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-
-                        <?php endforeach; ?>
-
-
-                    </div>
-
+                    <?= htmlspecialchars(
+                        $horaGrade
+                    ) ?>
 
                 </div>
 
 
-            <?php endforeach; ?>
+                <div class="conteudo-grade-dia">
 
-        </div>
+                    <div class="topo-grade-atendimento">
 
-
-    <?php else: ?>
-
-
-        <div class="agenda-dia-vazia">
-
-            Nenhum atendimento encontrado
-            para esta data.
-
-        </div>
+                        <strong>
+                            <?= htmlspecialchars(
+                                $atendimentoNoHorario[
+                                    'cli_nome'
+                                ]
+                            ) ?>
+                        </strong>
 
 
-    <?php endif; ?>
+                        <span
+                            class="status <?= htmlspecialchars(
+                                $atendimentoNoHorario[
+                                    'agend_status'
+                                ]
+                            ) ?>"
+                        >
+                            <?= ucfirst(
+                                htmlspecialchars(
+                                    $atendimentoNoHorario[
+                                        'agend_status'
+                                    ]
+                                )
+                            ) ?>
+                        </span>
+
+                    </div>
+
+
+                    <span class="servico-grade-dia">
+
+                        <?= htmlspecialchars(
+                            $atendimentoNoHorario[
+                                'servicos'
+                            ]
+                            ??
+                            'Serviço não informado'
+                        ) ?>
+
+                    </span>
+
+
+                    <small>
+
+                        <?= date(
+                            'H:i',
+                            strtotime(
+                                $atendimentoNoHorario[
+                                    'agend_data_hora'
+                                ]
+                            )
+                        ) ?>
+
+                        —
+
+                        <?= date(
+                            'H:i',
+                            strtotime(
+                                $atendimentoNoHorario[
+                                    'agend_tempo_final'
+                                ]
+                            )
+                        ) ?>
+
+                    </small>
+
+
+                    <a
+                        href="editar_agendamento.php?id=<?= (int)
+                            $atendimentoNoHorario[
+                                'agend_id'
+                            ]
+                        ?>"
+                        class="link-grade-editar"
+                    >
+                        Editar
+                    </a>
+
+                </div>
+
+            </div>
+
+
+        <?php elseif ($atendimentoNoHorario): ?>
+
+            <div class="
+                linha-horario-dia
+                horario-dia-continuacao
+            ">
+
+                <div class="hora-grade-dia">
+
+                    <?= htmlspecialchars(
+                        $horaGrade
+                    ) ?>
+
+                </div>
+
+
+                <div class="conteudo-grade-dia">
+
+                    <span class="indicador-ocupado">
+
+                        Ocupado até
+
+                        <?= date(
+                            'H:i',
+                            strtotime(
+                                $atendimentoNoHorario[
+                                    'agend_tempo_final'
+                                ]
+                            )
+                        ) ?>
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        <?php else: ?>
+
+            <div class="
+                linha-horario-dia
+                horario-dia-livre
+            ">
+
+                <div class="hora-grade-dia">
+
+                    <?= htmlspecialchars(
+                        $horaGrade
+                    ) ?>
+
+                </div>
+
+
+                <div class="conteudo-grade-dia">
+
+                    <span class="indicador-livre">
+                        Livre
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        <?php endif; ?>
+
+
+    <?php endforeach; ?>
+
+</div>
+
+
+</div>
+
+
+<?php endforeach; ?>
+
+
+</div>
+
+
+<?php else: ?>
+
+
+    <div class="agenda-dia-vazia">
+
+        Nenhum atendimento encontrado
+        para esta data.
+
+    </div>
+
+
+<?php endif; ?>
 
 
 </div>

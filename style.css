@@ -3655,3 +3655,250 @@ button:focus-visible {
     }
 
 }
+
+/* =========================================
+   GRADE DIÁRIA DE HORÁRIOS
+   ========================================= */
+
+.grade-horarios-dia {
+    max-height: 580px;
+
+    overflow-y: auto;
+
+    padding: 8px 12px 12px;
+}
+
+
+.linha-horario-dia {
+    display: grid;
+
+    grid-template-columns:
+        62px minmax(0, 1fr);
+
+    min-height: 48px;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.linha-horario-dia:last-child {
+    border-bottom: none;
+}
+
+
+.hora-grade-dia {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: center;
+
+    padding-top: 14px;
+
+    color: #71717a;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    border-right: 1px solid #eeeeee;
+}
+
+
+/* =========================================
+   HORÁRIO LIVRE
+   ========================================= */
+
+.horario-dia-livre {
+    background: #ffffff;
+}
+
+
+.horario-dia-livre:hover {
+    background: #fafafa;
+}
+
+
+.horario-dia-livre
+.conteudo-grade-dia {
+    display: flex;
+
+    align-items: center;
+
+    padding: 10px 14px;
+}
+
+
+.indicador-livre {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: #9a9aa0;
+
+    font-size: 11px;
+}
+
+
+.indicador-livre::before {
+    content: "";
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #d4d4d8;
+}
+
+
+/* =========================================
+   HORÁRIO OCUPADO
+   ========================================= */
+
+.horario-dia-ocupado {
+    background: #fdfbf6;
+}
+
+
+.horario-dia-ocupado
+.conteudo-grade-dia {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    margin: 6px 8px;
+
+    padding: 10px 12px;
+
+    border-left: 3px solid
+        var(--cor-dourada);
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.04);
+}
+
+
+.topo-grade-atendimento {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+}
+
+
+.topo-grade-atendimento > strong {
+    font-size: 13px;
+}
+
+
+.servico-grade-dia {
+    color: #71717a;
+
+    font-size: 11px;
+}
+
+
+.conteudo-grade-dia small {
+    color: #9a9aa0;
+
+    font-size: 10px;
+}
+
+
+.link-grade-editar {
+    position: absolute;
+
+    right: 11px;
+    bottom: 9px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    color: var(--cor-principal);
+
+    text-decoration: none;
+}
+
+
+.link-grade-editar:hover {
+    text-decoration: underline;
+}
+
+
+/* Barra de rolagem */
+
+.grade-horarios-dia::-webkit-scrollbar {
+    width: 6px;
+}
+
+
+.grade-horarios-dia::-webkit-scrollbar-thumb {
+    background: #d4d4d8;
+
+    border-radius: 10px;
+}
+
+
+@media (max-width: 700px) {
+
+    .linha-horario-dia {
+        grid-template-columns:
+            52px minmax(0, 1fr);
+    }
+
+}
+
+/* =========================================
+   CONTINUAÇÃO DE ATENDIMENTO
+   ========================================= */
+
+.horario-dia-continuacao {
+    background: #fdfbf6;
+}
+
+
+.horario-dia-continuacao
+.conteudo-grade-dia {
+    display: flex;
+
+    align-items: center;
+
+    padding: 10px 14px;
+}
+
+
+.indicador-ocupado {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #a17825;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+.indicador-ocupado::before {
+    content: "↳";
+
+    font-size: 14px;
+}
