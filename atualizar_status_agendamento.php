@@ -146,6 +146,68 @@ if (
 
 try {
 
+    /* =========================================
+   IMPEDE CONCLUSÃO ANTECIPADA
+   ========================================= */
+
+if ($status === 'concluido') {
+
+    $consultaHorario =
+        $conexao->prepare(
+            'SELECT agend_data_hora
+             FROM AGENDAMENTO
+             WHERE agend_id = :id'
+        );
+
+    $consultaHorario->execute([
+        ':id' => $id
+    ]);
+
+    $dataHoraAgendamento =
+        $consultaHorario->fetchColumn();
+
+
+    if (!$dataHoraAgendamento) {
+
+        $parametrosRetorno['status'] =
+            'erro_atualizacao';
+
+        header(
+            'Location: agendamentos.php?'
+            . http_build_query(
+                $parametrosRetorno
+            )
+        );
+
+        exit;
+    }
+
+
+    $inicioAtendimento =
+        new DateTime(
+            $dataHoraAgendamento
+        );
+
+    $agora =
+        new DateTime();
+
+
+    if ($agora < $inicioAtendimento) {
+
+        $parametrosRetorno['status'] =
+            'conclusao_antecipada';
+
+        header(
+            'Location: agendamentos.php?'
+            . http_build_query(
+                $parametrosRetorno
+            )
+        );
+
+        exit;
+    }
+}
+
     $comando =
         $conexao->prepare(
             'UPDATE AGENDAMENTO

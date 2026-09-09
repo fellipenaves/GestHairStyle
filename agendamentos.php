@@ -1118,11 +1118,23 @@ $linkProfissional =
 
     <?php endif; ?>
 
+    <?php
+
+    $inicioParaConcluir =
+        new DateTime(
+            $atendimentoNoHorario[
+                'agend_data_hora'
+            ]
+        );
+
+    ?>
 
     <?php if (
         $atendimentoNoHorario[
             'agend_status'
         ] === 'confirmado'
+        &&
+        $agoraGrade >= $inicioParaConcluir
     ): ?>
 
         <form
@@ -1444,6 +1456,19 @@ $linkProfissional =
         <div class="mensagem-sucesso">
             Agendamento atualizado com sucesso!
         </div>
+    
+    <?php elseif (
+    ($_GET['status'] ?? '')
+    === 'conclusao_antecipada'
+): ?>
+
+    <div class="mensagem-erro">
+
+        Não é possível concluir
+        um atendimento antes
+        do horário agendado.
+
+    </div>
 
     <?php elseif (isset($_GET['status'])): ?>
         <div class="mensagem-erro">
