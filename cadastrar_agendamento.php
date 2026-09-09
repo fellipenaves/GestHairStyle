@@ -2,6 +2,19 @@
 
 require_once 'conexao.php';
 
+$barbeiroInicial = filter_input(
+    INPUT_GET,
+    'barbeiro_id',
+    FILTER_VALIDATE_INT
+);
+
+$dataInicial = trim(
+    $_GET['data'] ?? ''
+);
+
+$horaInicial = trim(
+    $_GET['hora'] ?? ''
+);
 
 /* =========================================
    DADOS PARA OS CAMPOS
@@ -496,6 +509,15 @@ require 'menu.php';
                         Barbeiro
                     </label>
 
+                    <?php
+
+                    $barbeiroSelecionado =
+                        $_POST['barbeiro_id']
+                        ?? $barbeiroInicial
+                        ?? '';
+
+                    ?>
+
                     <select
                         id="barbeiro_id"
                         name="barbeiro_id"
@@ -512,8 +534,9 @@ require 'menu.php';
                             <option
                                 value="<?= (int) $barbeiro['barb_id'] ?>"
                                 <?= (
-                                    ($_POST['barbeiro_id'] ?? '')
-                                    == $barbeiro['barb_id']
+                                    (int) $barbeiroSelecionado
+                                    ===
+                                    (int) $barbeiro['barb_id']
                                 ) ? 'selected' : '' ?>
                             >
 
@@ -657,10 +680,14 @@ require 'menu.php';
         type="date"
         id="data_disponibilidade"
         value="<?= htmlspecialchars(
-            isset($_POST['data_hora'])
-                ? substr($_POST['data_hora'], 0, 10)
-                : ''
-        ) ?>"
+    isset($_POST['data_hora'])
+        ? substr(
+            $_POST['data_hora'],
+            0,
+            10
+        )
+        : $dataInicial
+) ?>"
     >
 
     <small class="ajuda-campo">
@@ -850,6 +877,12 @@ const campoDataHora =
 const listaHorarios =
     document.getElementById('horarios_disponiveis');
 
+const horarioInicial =
+    <?= json_encode($horaInicial) ?>;
+
+const dataInicial =
+    <?= json_encode($dataInicial) ?>;
+
 
 async function carregarHorarios() {
 
@@ -999,6 +1032,29 @@ async function carregarHorarios() {
                 listaHorarios.appendChild(
                     botao
                 );
+
+                /*
+ * Se o cadastro veio da agenda visual,
+ * seleciona automaticamente o horário
+ * clicado, desde que ainda esteja disponível.
+ */
+
+if (
+    horarioInicial &&
+    dataInicial &&
+    horario.hora === horarioInicial &&
+    data === dataInicial
+) {
+
+    botao.classList.add(
+        'horario-selecionado'
+    );
+
+    campoDataHora.value =
+        data
+        + 'T'
+        + horario.hora;
+}
 
             }
         );

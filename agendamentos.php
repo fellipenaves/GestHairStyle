@@ -288,15 +288,18 @@ foreach ($agendaVisual as $atendimento) {
     ) {
 
         $agendaVisualPorBarbeiro[
-            $barbeiroIdVisual
-        ] = [
+    $barbeiroIdVisual
+] = [
 
-            'nome' =>
-                $atendimento['barb_nome'],
+    'id' =>
+        $barbeiroIdVisual,
 
-            'atendimentos' => []
+    'nome' =>
+        $atendimento['barb_nome'],
 
-        ];
+    'atendimentos' => []
+
+];
     }
 
 
@@ -1076,11 +1079,20 @@ $linkProfissional =
 
                 <div class="conteudo-grade-dia">
 
-                    <span class="indicador-livre">
-                        Livre
-                    </span>
+    <a
+        href="cadastrar_agendamento.php?barbeiro_id=<?= (int)
+            $barbeiroVisual['atendimentos'][0]['barb_id']
+        ?>&data=<?= urlencode(
+            $dataReferencia
+        ) ?>&hora=<?= urlencode(
+            $horaGrade
+        ) ?>"
+        class="link-horario-livre"
+    >
+        + Agendar
+    </a>
 
-                </div>
+</div>
 
             </div>
 
