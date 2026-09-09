@@ -176,6 +176,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'Y-m-d H:i:s'
                 );
 
+            /* =========================================
+   HORÁRIO DE FUNCIONAMENTO
+   Segunda a sábado - 08:00 às 21:00
+   ========================================= */
+
+$diaSemana =
+    (int) $dataObjeto->format('N');
+
+$horaAgendamento =
+    $dataObjeto->format('H:i');
+
+$agora = new DateTime();
+
+
+if ($dataObjeto <= $agora) {
+
+    $mensagem =
+        'Não é possível alterar o agendamento para uma data ou horário passado.';
+
+} elseif ($diaSemana === 7) {
+
+    $mensagem =
+        'A barbearia não funciona aos domingos.';
+
+} elseif (
+    $horaAgendamento < '08:00' ||
+    $horaAgendamento >= '21:00'
+) {
+
+    $mensagem =
+        'O horário de atendimento é das 08:00 às 21:00.';
+}
 
             /* Calcula horário final */
 
@@ -192,6 +224,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $tempoFinalObjeto->format(
                     'Y-m-d H:i:s'
                 );
+            
+            $horarioFinal =
+    $tempoFinalObjeto->format('H:i');
+
+
+if (
+    $mensagem === '' &&
+    $horarioFinal > '21:00'
+) {
+
+    $mensagem =
+        'Este serviço ultrapassaria o horário de fechamento das 21:00.';
+}
+
+
+if ($mensagem !== '') {
+
+    throw new Exception($mensagem);
+}
 
 
             /* =========================================
@@ -355,13 +406,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (Throwable $erro) {
 
-            if ($conexao->inTransaction()) {
-                $conexao->rollBack();
-            }
+    if ($conexao->inTransaction()) {
+        $conexao->rollBack();
+    }
 
-            $mensagem =
-                'Não foi possível atualizar o agendamento.';
-        }
+    if ($mensagem === '') {
+
+        $mensagem =
+            'Não foi possível atualizar o agendamento.';
+    }
+}
     }
 }
 
@@ -661,33 +715,110 @@ require 'menu.php';
 
                 <!-- DATA -->
 
-                <div
-                    class="
-                        campo-formulario
-                        campo-formulario-grande
-                    "
-                >
+<div
+    class="
+        campo-formulario
+        campo-formulario-grande
+    "
+>
 
-                    <label for="data_hora">
-                        Data e horário
-                    </label>
+    <label for="data_disponibilidade">
+        Data do atendimento
+    </label>
 
-                    <input
-                        type="datetime-local"
-                        id="data_hora"
-                        name="data_hora"
-                        value="<?= htmlspecialchars(
-                            $dataHoraSelecionada
-                        ) ?>"
-                        required
-                    >
+    <input
+        type="date"
+        id="data_disponibilidade"
+        value="<?= htmlspecialchars(
+            substr(
+                $dataHoraSelecionada,
+                0,
+                10
+            )
+        ) ?>"
+    >
 
-                    <small class="ajuda-campo">
-                        O sistema verificará conflitos
-                        com outros agendamentos do barbeiro.
-                    </small>
+    <small class="ajuda-campo">
+        Escolha a data para consultar
+        os horários disponíveis.
+    </small>
 
-                </div>
+</div>
+
+
+<!-- HORÁRIOS DISPONÍVEIS -->
+
+<div
+    class="
+        campo-formulario
+        campo-formulario-grande
+        bloco-horarios
+    "
+>
+
+    <div class="cabecalho-horarios">
+
+        <div>
+
+            <label>
+                Horários disponíveis
+            </label>
+
+            <small class="ajuda-campo">
+                O horário atual também poderá
+                aparecer, pois este agendamento
+                é ignorado na verificação.
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="horarios_disponiveis"
+        class="lista-horarios"
+    >
+
+        <div class="mensagem-horarios">
+            Consultando horários...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- HORÁRIO SELECIONADO -->
+
+<div
+    class="
+        campo-formulario
+        campo-formulario-grande
+    "
+>
+
+    <label for="data_hora">
+        Horário selecionado
+    </label>
+
+    <input
+        type="datetime-local"
+        id="data_hora"
+        name="data_hora"
+        value="<?= htmlspecialchars(
+            $dataHoraSelecionada
+        ) ?>"
+        readonly
+        required
+    >
+
+    <small class="ajuda-campo">
+        Clique em um horário disponível
+        para alterar o atendimento.
+    </small>
+
+</div>
 
 
             </div>
@@ -737,6 +868,25 @@ const resumoPreco =
 const resumoDuracao =
     document.getElementById('resumo_duracao');
 
+const campoBarbeiro =
+    document.getElementById('barbeiro_id');
+
+const campoDataDisponibilidade =
+    document.getElementById(
+        'data_disponibilidade'
+    );
+
+const campoDataHora =
+    document.getElementById('data_hora');
+
+const listaHorarios =
+    document.getElementById(
+        'horarios_disponiveis'
+    );
+
+const agendamentoId =
+    <?= (int) $id ?>;
+
 
 function atualizarResumoServico() {
 
@@ -784,6 +934,257 @@ campoServico.addEventListener(
 
 
 atualizarResumoServico();
+
+/* =========================================
+   HORÁRIOS DISPONÍVEIS
+   ========================================= */
+
+async function carregarHorarios(
+    limparHorario = false
+) {
+
+    const barbeiroId =
+        campoBarbeiro.value;
+
+    const servicoId =
+        campoServico.value;
+
+    const data =
+        campoDataDisponibilidade.value;
+
+
+    if (limparHorario) {
+        campoDataHora.value = '';
+    }
+
+
+    if (
+        !barbeiroId ||
+        !servicoId ||
+        !data
+    ) {
+
+        listaHorarios.innerHTML = `
+            <div class="mensagem-horarios">
+                Selecione barbeiro,
+                serviço e data.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    listaHorarios.innerHTML = `
+        <div class="mensagem-horarios">
+            Consultando horários...
+        </div>
+    `;
+
+
+    try {
+
+        const parametros =
+            new URLSearchParams({
+
+                barbeiro_id:
+                    barbeiroId,
+
+                servico_id:
+                    servicoId,
+
+                data:
+                    data,
+
+                agendamento_id:
+                    agendamentoId
+
+            });
+
+
+        const resposta =
+            await fetch(
+                'horarios_disponiveis.php?'
+                + parametros.toString()
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (!resultado.sucesso) {
+
+            listaHorarios.innerHTML = `
+                <div
+                    class="
+                        mensagem-horarios
+                        erro-horarios
+                    "
+                >
+                    Não foi possível consultar
+                    os horários.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        if (
+            resultado.horarios.length === 0
+        ) {
+
+            listaHorarios.innerHTML = `
+                <div class="mensagem-horarios">
+                    ${
+                        resultado.mensagem
+                        ??
+                        'Nenhum horário disponível nesta data.'
+                    }
+                </div>
+            `;
+
+            return;
+        }
+
+
+        listaHorarios.innerHTML = '';
+
+
+        resultado.horarios.forEach(
+            horario => {
+
+                const botao =
+                    document.createElement(
+                        'button'
+                    );
+
+
+                botao.type = 'button';
+
+                botao.className =
+                    'botao-horario';
+
+
+                botao.innerHTML = `
+                    <strong>
+                        ${horario.hora}
+                    </strong>
+
+                    <small>
+                        até ${horario.fim}
+                    </small>
+                `;
+
+
+                const dataHoraBotao =
+                    data
+                    + 'T'
+                    + horario.hora;
+
+
+                /*
+                 * Destaca o horário
+                 * atualmente selecionado.
+                 */
+
+                if (
+                    campoDataHora.value
+                    === dataHoraBotao
+                ) {
+
+                    botao.classList.add(
+                        'horario-selecionado'
+                    );
+                }
+
+
+                botao.addEventListener(
+                    'click',
+                    () => {
+
+                        document
+                            .querySelectorAll(
+                                '.botao-horario'
+                            )
+                            .forEach(
+                                item =>
+                                    item.classList
+                                        .remove(
+                                            'horario-selecionado'
+                                        )
+                            );
+
+
+                        botao.classList.add(
+                            'horario-selecionado'
+                        );
+
+
+                        campoDataHora.value =
+                            dataHoraBotao;
+
+                    }
+                );
+
+
+                listaHorarios.appendChild(
+                    botao
+                );
+
+            }
+        );
+
+
+    } catch (erro) {
+
+        listaHorarios.innerHTML = `
+            <div
+                class="
+                    mensagem-horarios
+                    erro-horarios
+                "
+            >
+                Erro ao consultar
+                os horários.
+            </div>
+        `;
+
+    }
+}
+
+
+/* Mudou barbeiro */
+
+campoBarbeiro.addEventListener(
+    'change',
+    () => carregarHorarios(true)
+);
+
+
+/* Mudou serviço */
+
+campoServico.addEventListener(
+    'change',
+    () => carregarHorarios(true)
+);
+
+
+/* Mudou data */
+
+campoDataDisponibilidade.addEventListener(
+    'change',
+    () => carregarHorarios(true)
+);
+
+
+/*
+ * Carrega automaticamente
+ * ao abrir a edição.
+ */
+
+carregarHorarios();
 
 </script>
 

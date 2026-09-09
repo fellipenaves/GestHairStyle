@@ -17,6 +17,12 @@ $servicoId = filter_input(
     FILTER_VALIDATE_INT
 );
 
+$agendamentoId = filter_input(
+    INPUT_GET,
+    'agendamento_id',
+    FILTER_VALIDATE_INT
+);
+
 $data = trim(
     $_GET['data'] ?? ''
 );
@@ -128,29 +134,57 @@ $duracao = (int) $duracao;
    AGENDAMENTOS DO BARBEIRO
    ========================================= */
 
-$consultaAgenda = $conexao->prepare(
-    "SELECT
+$sqlAgenda = "
+    SELECT
         agend_data_hora,
         agend_tempo_final
 
-     FROM AGENDAMENTO
+    FROM AGENDAMENTO
 
-     WHERE barb_id = :barbeiro_id
+    WHERE barb_id = :barbeiro_id
 
-       AND DATE(agend_data_hora) = :data
+      AND DATE(agend_data_hora) = :data
 
-       AND agend_status <> 'cancelado'
+      AND agend_status <> 'cancelado'
+";
 
-     ORDER BY agend_data_hora"
-);
 
-$consultaAgenda->execute([
+if ($agendamentoId) {
+
+    $sqlAgenda .= "
+        AND agend_id <> :agendamento_id
+    ";
+}
+
+
+$sqlAgenda .= "
+    ORDER BY agend_data_hora
+";
+
+
+$consultaAgenda =
+    $conexao->prepare($sqlAgenda);
+
+$parametrosAgenda = [
 
     ':barbeiro_id' => $barbeiroId,
 
     ':data' => $data
 
-]);
+];
+
+
+if ($agendamentoId) {
+
+    $parametrosAgenda[
+        ':agendamento_id'
+    ] = $agendamentoId;
+}
+
+
+$consultaAgenda->execute(
+    $parametrosAgenda
+);
 
 $ocupados = $consultaAgenda->fetchAll(
     PDO::FETCH_ASSOC
