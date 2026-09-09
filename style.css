@@ -3171,3 +3171,487 @@ button:focus-visible {
 
     background: #fee2e2;
 }
+
+/* =========================================
+   AGENDA VISUAL DO DIA
+   ========================================= */
+
+.painel-agenda-dia {
+    margin-top: 28px;
+    margin-bottom: 28px;
+}
+
+
+.cabecalho-agenda-dia {
+    margin-bottom: 18px;
+}
+
+
+.cabecalho-agenda-dia h2 {
+    margin: 4px 0 5px;
+}
+
+
+.cabecalho-agenda-dia p {
+    margin: 0;
+    color: #71717a;
+}
+
+
+.grid-agenda-dia {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(280px, 1fr)
+        );
+
+    gap: 18px;
+}
+
+
+.coluna-agenda-barbeiro {
+    background: #ffffff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+}
+
+
+.titulo-agenda-barbeiro {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 16px 18px;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.titulo-agenda-barbeiro > div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.titulo-agenda-barbeiro small {
+    margin-top: 3px;
+
+    color: #8a8a90;
+}
+
+
+.lista-agenda-dia {
+    padding: 10px;
+}
+
+
+.item-agenda-dia {
+    display: grid;
+
+    grid-template-columns:
+        68px 1fr;
+
+    gap: 12px;
+
+    padding: 12px 8px;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.item-agenda-dia:last-child {
+    border-bottom: none;
+}
+
+
+.horario-agenda-dia {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.horario-agenda-dia strong {
+    font-size: 16px;
+}
+
+
+.horario-agenda-dia span {
+    margin-top: 2px;
+
+    font-size: 10px;
+
+    color: #8a8a90;
+}
+
+
+.dados-agenda-dia {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.dados-agenda-dia > span {
+    font-size: 12px;
+
+    color: #71717a;
+}
+
+
+.rodape-item-agenda {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-top: 7px;
+}
+
+
+.link-agenda-dia {
+    font-size: 11px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    color: var(--cor-principal);
+}
+
+
+.link-agenda-dia:hover {
+    text-decoration: underline;
+}
+
+
+.agenda-dia-vazia {
+    padding: 24px;
+
+    border: 1px dashed #d4d4d8;
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    color: #71717a;
+
+    background: #fafafa;
+}
+
+
+@media (max-width: 700px) {
+
+    .grid-agenda-dia {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* =========================================
+   REFINAMENTO DA AGENDA VISUAL
+   ========================================= */
+
+.painel-agenda-dia {
+    margin-top: 35px;
+    margin-bottom: 35px;
+}
+
+
+/* Cabeçalho */
+
+.cabecalho-agenda-dia {
+    margin-bottom: 22px;
+}
+
+.cabecalho-agenda-dia h2 {
+    margin: 6px 0 8px;
+
+    font-size: 26px;
+}
+
+.cabecalho-agenda-dia p {
+    margin: 0;
+
+    color: #71717a;
+
+    font-size: 14px;
+}
+
+
+/* Grid dos barbeiros */
+
+.grid-agenda-dia {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(300px, 1fr)
+        );
+
+    gap: 20px;
+
+    align-items: start;
+}
+
+
+/* Card do barbeiro */
+
+.coluna-agenda-barbeiro {
+    background: #ffffff;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0, 0, 0, 0.06);
+}
+
+
+/* Cabeçalho do barbeiro */
+
+.titulo-agenda-barbeiro {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.titulo-agenda-barbeiro > div:last-child {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.titulo-agenda-barbeiro strong {
+    display: block;
+
+    font-size: 16px;
+
+    line-height: 1.3;
+}
+
+
+.titulo-agenda-barbeiro small {
+    display: block;
+
+    color: #8a8a90;
+
+    font-size: 12px;
+}
+
+
+/* Lista de atendimentos */
+
+.lista-agenda-dia {
+    padding: 12px;
+}
+
+
+/* Cada atendimento */
+
+.item-agenda-dia {
+    display: grid;
+
+    grid-template-columns:
+        72px minmax(0, 1fr);
+
+    gap: 14px;
+
+    padding: 14px;
+
+    margin-bottom: 9px;
+
+    background: #fafafa;
+
+    border: 1px solid #eeeeee;
+
+    border-radius: 13px;
+}
+
+
+.item-agenda-dia:last-child {
+    margin-bottom: 0;
+}
+
+
+/* Horário */
+
+.horario-agenda-dia {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    padding-right: 10px;
+
+    border-right: 1px solid #e5e5e5;
+}
+
+
+.horario-agenda-dia strong {
+    display: block;
+
+    font-size: 17px;
+
+    line-height: 1.2;
+}
+
+
+.horario-agenda-dia span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #8a8a90;
+
+    font-size: 10px;
+}
+
+
+/* Cliente e serviço */
+
+.dados-agenda-dia {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    min-width: 0;
+
+    gap: 5px;
+}
+
+
+.dados-agenda-dia > strong {
+    display: block;
+
+    font-size: 14px;
+
+    line-height: 1.3;
+}
+
+
+.dados-agenda-dia > span {
+    display: block;
+
+    color: #71717a;
+
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+
+/* Rodapé */
+
+.rodape-item-agenda {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    gap: 10px;
+
+    margin-top: 6px;
+}
+
+
+/* Link editar */
+
+.link-agenda-dia {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    background: #f0f0f0;
+
+    color: #27272a;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+.link-agenda-dia:hover {
+    background: #e5e5e5;
+
+    text-decoration: none;
+}
+
+
+/* Agenda vazia */
+
+.agenda-dia-vazia {
+    padding: 30px;
+
+    background: #ffffff;
+
+    border: 1px dashed #d4d4d8;
+
+    border-radius: 16px;
+
+    color: #71717a;
+
+    text-align: center;
+}
+
+
+/* Celular */
+
+@media (max-width: 700px) {
+
+    .grid-agenda-dia {
+        grid-template-columns: 1fr;
+    }
+
+
+    .item-agenda-dia {
+        grid-template-columns:
+            65px minmax(0, 1fr);
+    }
+
+}

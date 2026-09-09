@@ -102,6 +102,181 @@ $agendaProfissionais =
     $consultaAgendaProfissionais
         ->fetchAll(PDO::FETCH_ASSOC);
 
+/* =========================================
+   AGENDA VISUAL DO DIA
+   ========================================= */
+
+$sqlAgendaVisual = "
+    SELECT
+        a.agend_id,
+        a.agend_data_hora,
+        a.agend_tempo_final,
+        a.agend_status,
+        a.agend_preco,
+
+        b.barb_id,
+        b.barb_nome,
+
+        c.cli_nome,
+
+        GROUP_CONCAT(
+            s.serv_nome
+            ORDER BY s.serv_nome
+            SEPARATOR ', '
+        ) AS servicos
+
+    FROM AGENDAMENTO AS a
+
+    INNER JOIN BARBEIRO AS b
+        ON b.barb_id = a.barb_id
+
+    INNER JOIN CLIENTE AS c
+        ON c.cli_id = a.cli_id
+
+    LEFT JOIN AGENDAMENTO_SERVICO AS ags
+        ON ags.agend_id = a.agend_id
+
+    LEFT JOIN SERVICO AS s
+        ON s.serv_id = ags.serv_id
+
+    WHERE DATE(a.agend_data_hora)
+        = :data_referencia
+";
+
+$parametrosAgendaVisual = [
+    ':data_referencia' => $dataReferencia
+];
+
+
+/* STATUS */
+
+if (
+    $filtroStatus !== '' &&
+    in_array(
+        $filtroStatus,
+        [
+            'pendente',
+            'confirmado',
+            'concluido',
+            'cancelado'
+        ],
+        true
+    )
+) {
+
+    $sqlAgendaVisual .= "
+        AND a.agend_status = :status_visual
+    ";
+
+    $parametrosAgendaVisual[
+        ':status_visual'
+    ] = $filtroStatus;
+
+} else {
+
+    $sqlAgendaVisual .= "
+        AND a.agend_status <> 'cancelado'
+    ";
+}
+
+
+/* BARBEIRO */
+
+if ($filtroBarbeiro) {
+
+    $sqlAgendaVisual .= "
+        AND a.barb_id = :barbeiro_visual
+    ";
+
+    $parametrosAgendaVisual[
+        ':barbeiro_visual'
+    ] = $filtroBarbeiro;
+}
+
+
+/* CLIENTE */
+
+if ($filtroCliente !== '') {
+
+    $sqlAgendaVisual .= "
+        AND c.cli_nome LIKE :cliente_visual
+    ";
+
+    $parametrosAgendaVisual[
+        ':cliente_visual'
+    ] =
+        '%' . $filtroCliente . '%';
+}
+
+
+$sqlAgendaVisual .= "
+    GROUP BY
+        a.agend_id,
+        a.agend_data_hora,
+        a.agend_tempo_final,
+        a.agend_status,
+        a.agend_preco,
+        b.barb_id,
+        b.barb_nome,
+        c.cli_nome
+
+    ORDER BY
+        b.barb_nome,
+        a.agend_data_hora ASC
+";
+
+
+$consultaAgendaVisual =
+    $conexao->prepare(
+        $sqlAgendaVisual
+    );
+
+$consultaAgendaVisual->execute(
+    $parametrosAgendaVisual
+);
+
+$agendaVisual =
+    $consultaAgendaVisual
+        ->fetchAll(PDO::FETCH_ASSOC);
+
+
+/* Organiza os atendimentos por barbeiro */
+
+$agendaVisualPorBarbeiro = [];
+
+foreach ($agendaVisual as $atendimento) {
+
+    $barbeiroIdVisual =
+        (int) $atendimento['barb_id'];
+
+
+    if (
+        !isset(
+            $agendaVisualPorBarbeiro[
+                $barbeiroIdVisual
+            ]
+        )
+    ) {
+
+        $agendaVisualPorBarbeiro[
+            $barbeiroIdVisual
+        ] = [
+
+            'nome' =>
+                $atendimento['barb_nome'],
+
+            'atendimentos' => []
+
+        ];
+    }
+
+
+    $agendaVisualPorBarbeiro[
+        $barbeiroIdVisual
+    ]['atendimentos'][] =
+        $atendimento;
+}
+
 $statusPermitidos = [
     'pendente',
     'confirmado',
@@ -272,7 +447,8 @@ $criarLinkStatus = function ($status) use (
 
     <title>Agendamentos | GestHairStyle</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?= filemtime('style.css') ?>"
+    >
 </head>
 
 <body>
@@ -469,6 +645,12 @@ if (
         $filtroStatus;
 }
 
+if ($filtroCliente !== '') {
+
+    $parametrosProfissional['filtro_cliente'] =
+        $filtroCliente;
+}
+
 $linkProfissional =
     'agendamentos.php?'
     . http_build_query($parametrosProfissional);
@@ -555,6 +737,223 @@ $linkProfissional =
         <?php endforeach; ?>
 
     </div>
+
+</div>
+
+<!-- =========================================
+     AGENDA VISUAL DO DIA
+     ========================================= -->
+
+<div class="painel-agenda-dia">
+
+    <div class="cabecalho-agenda-dia">
+
+        <div>
+
+            <span class="subtitulo-dashboard">
+                VISÃO DO DIA
+            </span>
+
+            <h2>
+                Agenda de
+                <?= date(
+                    'd/m/Y',
+                    strtotime($dataReferencia)
+                ) ?>
+            </h2>
+
+            <p>
+                Atendimentos organizados
+                por profissional e horário.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <?php if (
+        count($agendaVisualPorBarbeiro) > 0
+    ): ?>
+
+
+        <div class="grid-agenda-dia">
+
+            <?php foreach (
+                $agendaVisualPorBarbeiro
+                as $barbeiroVisual
+            ): ?>
+
+
+                <div class="coluna-agenda-barbeiro">
+
+
+                    <div class="titulo-agenda-barbeiro">
+
+                        <div class="avatar-profissional">
+                            ✂
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                <?= htmlspecialchars(
+                                    $barbeiroVisual['nome']
+                                ) ?>
+                            </strong>
+
+                            <small>
+                                <?= count(
+                                    $barbeiroVisual[
+                                        'atendimentos'
+                                    ]
+                                ) ?>
+                                atendimento<?= count(
+                                    $barbeiroVisual[
+                                        'atendimentos'
+                                    ]
+                                ) !== 1
+                                    ? 's'
+                                    : ''
+                                ?>
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="lista-agenda-dia">
+
+
+                        <?php foreach (
+                            $barbeiroVisual[
+                                'atendimentos'
+                            ]
+                            as $atendimentoVisual
+                        ): ?>
+
+
+                            <div class="item-agenda-dia">
+
+
+                                <div class="horario-agenda-dia">
+
+                                    <strong>
+                                        <?= date(
+                                            'H:i',
+                                            strtotime(
+                                                $atendimentoVisual[
+                                                    'agend_data_hora'
+                                                ]
+                                            )
+                                        ) ?>
+                                    </strong>
+
+                                    <span>
+                                        até
+                                        <?= date(
+                                            'H:i',
+                                            strtotime(
+                                                $atendimentoVisual[
+                                                    'agend_tempo_final'
+                                                ]
+                                            )
+                                        ) ?>
+                                    </span>
+
+                                </div>
+
+
+                                <div class="dados-agenda-dia">
+
+                                    <strong>
+                                        <?= htmlspecialchars(
+                                            $atendimentoVisual[
+                                                'cli_nome'
+                                            ]
+                                        ) ?>
+                                    </strong>
+
+
+                                    <span>
+                                        <?= htmlspecialchars(
+                                            $atendimentoVisual[
+                                                'servicos'
+                                            ]
+                                            ??
+                                            'Serviço não informado'
+                                        ) ?>
+                                    </span>
+
+
+                                    <div class="rodape-item-agenda">
+
+                                        <span
+                                            class="status <?= htmlspecialchars(
+                                                $atendimentoVisual[
+                                                    'agend_status'
+                                                ]
+                                            ) ?>"
+                                        >
+
+                                            <?= ucfirst(
+                                                htmlspecialchars(
+                                                    $atendimentoVisual[
+                                                        'agend_status'
+                                                    ]
+                                                )
+                                            ) ?>
+
+                                        </span>
+
+
+                                        <a
+                                            href="editar_agendamento.php?id=<?= (int)
+                                                $atendimentoVisual[
+                                                    'agend_id'
+                                                ]
+                                            ?>"
+                                            class="link-agenda-dia"
+                                        >
+                                            Editar
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        <?php endforeach; ?>
+
+
+                    </div>
+
+
+                </div>
+
+
+            <?php endforeach; ?>
+
+        </div>
+
+
+    <?php else: ?>
+
+
+        <div class="agenda-dia-vazia">
+
+            Nenhum atendimento encontrado
+            para esta data.
+
+        </div>
+
+
+    <?php endif; ?>
+
 
 </div>
 
