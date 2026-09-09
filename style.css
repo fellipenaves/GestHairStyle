@@ -4173,3 +4173,15 @@ button:focus-visible {
 
     text-decoration: none;
 }
+
+/* =========================================
+   STATUS ATRASADO
+   ========================================= */
+
+.status.atrasado {
+    background: #fff3cd;
+
+    color: #92400e;
+
+    border: 1px solid #f5d98b;
+}

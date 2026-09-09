@@ -985,21 +985,48 @@ $linkProfissional =
                         </strong>
 
 
-                        <span
-                            class="status <?= htmlspecialchars(
-                                $atendimentoNoHorario[
-                                    'agend_status'
-                                ]
-                            ) ?>"
-                        >
-                            <?= ucfirst(
-                                htmlspecialchars(
-                                    $atendimentoNoHorario[
-                                        'agend_status'
-                                    ]
-                                )
-                            ) ?>
-                        </span>
+                        <?php
+
+$statusVisual =
+    $atendimentoNoHorario[
+        'agend_status'
+    ];
+
+$textoStatusVisual =
+    ucfirst($statusVisual);
+
+
+if ($statusVisual === 'confirmado') {
+
+    $fimParaStatus =
+        new DateTime(
+            $atendimentoNoHorario[
+                'agend_tempo_final'
+            ]
+        );
+
+    if ($agoraGrade > $fimParaStatus) {
+
+        $statusVisual =
+            'atrasado';
+
+        $textoStatusVisual =
+            'Atrasado';
+    }
+}
+
+?>
+
+
+<span
+    class="status <?= htmlspecialchars(
+        $statusVisual
+    ) ?>"
+>
+    <?= htmlspecialchars(
+        $textoStatusVisual
+    ) ?>
+</span>
 
                     </div>
 
