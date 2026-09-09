@@ -1269,6 +1269,11 @@ $linkProfissional =
                     botao-acao-grade
                     botao-cancelar-grade
                 "
+                onclick="
+                    return confirm(
+                        'Tem certeza que deseja cancelar este agendamento?'
+                    );
+                "
             >
                 Cancelar
             </button>
