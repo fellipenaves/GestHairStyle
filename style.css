@@ -3969,3 +3969,94 @@ button:focus-visible {
 
     margin-right: 6px;
 }
+
+/* =========================================
+   LEGENDA DA AGENDA DIÁRIA
+   ========================================= */
+
+.legenda-agenda-dia {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 14px;
+
+    margin-top: 14px;
+}
+
+
+.legenda-item {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    color: #71717a;
+}
+
+
+.legenda-item::before {
+    content: "";
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+}
+
+
+/* Disponível */
+
+.legenda-disponivel::before {
+    background: #d4d4d8;
+}
+
+
+/* Ocupado */
+
+.legenda-ocupado::before {
+    background: var(--cor-dourada);
+}
+
+
+/* Encerrado */
+
+.legenda-encerrado::before {
+    background: #a1a1aa;
+}
+
+/* =========================================
+   HORÁRIO ATUAL NA AGENDA
+   ========================================= */
+
+.linha-horario-dia.horario-atual {
+    position: relative;
+}
+
+
+.linha-horario-dia.horario-atual::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 3px;
+
+    background: var(--cor-dourada);
+}
+
+
+.linha-horario-dia.horario-atual
+.hora-grade-dia {
+    color: var(--cor-dourada);
+
+    font-weight: 700;
+}

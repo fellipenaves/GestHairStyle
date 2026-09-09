@@ -799,6 +799,22 @@ $linkProfissional =
                 por profissional e horário.
             </p>
 
+            <div class="legenda-agenda-dia">
+
+    <span class="legenda-item legenda-disponivel">
+        Disponível
+    </span>
+
+    <span class="legenda-item legenda-ocupado">
+        Ocupado
+    </span>
+
+    <span class="legenda-item legenda-encerrado">
+        Encerrado
+    </span>
+
+</div>
+
         </div>
 
     </div>
@@ -1427,6 +1443,149 @@ $linkProfissional =
         </table>
     </div>
 </div>
+
+<script>
+
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
+
+        const dataAgenda =
+            <?= json_encode($dataReferencia) ?>;
+
+        const hoje =
+            <?= json_encode(date('Y-m-d')) ?>;
+
+
+        /*
+         * Só faz a rolagem automática
+         * quando a agenda exibida é hoje.
+         */
+
+        if (dataAgenda !== hoje) {
+            return;
+        }
+
+
+        const agora = new Date();
+
+        const hora = agora.getHours();
+
+        const minutos = agora.getMinutes();
+
+
+        /*
+         * Converte o horário atual
+         * para o intervalo de 30 minutos
+         * correspondente.
+         */
+
+        let minutosTotais =
+            (hora * 60) + minutos;
+
+        let minutosGrade =
+            Math.floor(
+                minutosTotais / 30
+            ) * 30;
+
+
+        /* Antes das 08:00 */
+
+        if (minutosGrade < 480) {
+            minutosGrade = 480;
+        }
+
+
+        /* Depois das 20:30 */
+
+        if (minutosGrade > 1230) {
+            minutosGrade = 1230;
+        }
+
+
+        const horaGrade =
+            String(
+                Math.floor(
+                    minutosGrade / 60
+                )
+            ).padStart(2, '0')
+            +
+            ':'
+            +
+            String(
+                minutosGrade % 60
+            ).padStart(2, '0');
+
+
+        document
+            .querySelectorAll(
+                '.grade-horarios-dia'
+            )
+            .forEach(
+                grade => {
+
+                    const linhas =
+                        grade.querySelectorAll(
+                            '.linha-horario-dia'
+                        );
+
+
+                    let linhaAtual = null;
+
+
+                    linhas.forEach(
+                        linha => {
+
+                            const campoHora =
+                                linha.querySelector(
+                                    '.hora-grade-dia'
+                                );
+
+
+                            if (
+                                campoHora &&
+                                campoHora
+                                    .textContent
+                                    .trim()
+                                === horaGrade
+                            ) {
+
+                                linhaAtual = linha;
+                            }
+
+                        }
+                    );
+
+
+                    if (linhaAtual) {
+
+                        /*
+                         * Pequeno destaque visual
+                         */
+
+                        linhaAtual.classList.add(
+                            'horario-atual'
+                        );
+
+
+                        /*
+                         * Coloca o horário atual
+                         * próximo do meio da agenda.
+                         */
+
+                        grade.scrollTop =
+                            linhaAtual.offsetTop
+                            -
+                            grade.clientHeight / 2;
+                    }
+
+                }
+            );
+
+    }
+);
+
+</script>
 
 </body>
 </html>
