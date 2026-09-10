@@ -4185,3 +4185,23 @@ button:focus-visible {
 
     border: 1px solid #f5d98b;
 }
+
+/* =========================================
+   CARD DE ATRASADOS
+   ========================================= */
+
+.card-atrasado {
+    border-left: 4px solid #d4a017;
+}
+
+
+.card-atrasado .icone-card {
+    background: #fff3cd;
+
+    color: #92400e;
+}
+
+
+.card-atrasado .info-card strong {
+    color: #92400e;
+}

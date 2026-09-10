@@ -16,6 +16,9 @@ $filtroCliente = trim(
     $_GET['filtro_cliente'] ?? ''
 );
 
+$filtroAtrasado =
+    ($_GET['filtro_atrasado'] ?? '') === '1';
+
 $listaBarbeiros = $conexao
     ->query(
         'SELECT barb_id, barb_nome
@@ -177,9 +180,24 @@ $parametrosAgendaVisual = [
 ];
 
 
-/* STATUS */
+/* STATUS / ATRASADOS */
 
-if (
+if ($filtroAtrasado) {
+
+    $sqlAgendaVisual .= "
+        AND a.agend_status = 'confirmado'
+
+        AND COALESCE(
+            a.agend_tempo_final,
+            a.agend_data_hora
+        ) < :agora_visual
+    ";
+
+    $parametrosAgendaVisual[
+        ':agora_visual'
+    ] = date('Y-m-d H:i:s');
+
+} elseif (
     $filtroStatus !== '' &&
     in_array(
         $filtroStatus,
@@ -207,7 +225,6 @@ if (
         AND a.agend_status <> 'cancelado'
     ";
 }
-
 
 /* BARBEIRO */
 
@@ -351,9 +368,34 @@ if (
     $parametros[':filtro_data'] = $filtroData;
 }
 
-if (in_array($filtroStatus, $statusPermitidos, true)) {
-    $sql .= ' AND a.agend_status = :filtro_status';
-    $parametros[':filtro_status'] = $filtroStatus;
+if ($filtroAtrasado) {
+
+    $sql .= "
+        AND a.agend_status = 'confirmado'
+
+        AND COALESCE(
+            a.agend_tempo_final,
+            a.agend_data_hora
+        ) < :agora_atrasado
+    ";
+
+    $parametros[':agora_atrasado'] =
+        date('Y-m-d H:i:s');
+
+} elseif (
+    in_array(
+        $filtroStatus,
+        $statusPermitidos,
+        true
+    )
+) {
+
+    $sql .= '
+        AND a.agend_status = :filtro_status
+    ';
+
+    $parametros[':filtro_status'] =
+        $filtroStatus;
 }
 
 if ($filtroBarbeiro) {
@@ -422,6 +464,37 @@ foreach ($resultadosStatus as $resultado) {
 }
 
 /* =========================================
+   CONTADOR DE ATRASADOS
+   ========================================= */
+
+$agoraBanco =
+    date('Y-m-d H:i:s');
+
+
+$consultaAtrasados =
+    $conexao->prepare(
+        "SELECT COUNT(*)
+
+         FROM AGENDAMENTO
+
+         WHERE agend_status = 'confirmado'
+
+           AND COALESCE(
+                agend_tempo_final,
+                agend_data_hora
+            ) < :agora"
+    );
+
+
+$consultaAtrasados->execute([
+    ':agora' => $agoraBanco
+]);
+
+
+$totalAtrasados =
+    (int) $consultaAtrasados->fetchColumn();
+
+/* =========================================
    LINKS DOS CARDS DE STATUS
    Preservam os demais filtros
    ========================================= */
@@ -468,6 +541,51 @@ $criarLinkStatus = function ($status) use (
         'agendamentos.php?'
         . http_build_query($parametros);
 };
+
+/* =========================================
+   LINK DO CARD ATRASADOS
+   ========================================= */
+
+$parametrosAtrasados = [
+    'filtro_atrasado' => 1
+];
+
+
+if (
+    $filtroData !== '' &&
+    preg_match(
+        '/^\d{4}-\d{2}-\d{2}$/',
+        $filtroData
+    )
+) {
+
+    $parametrosAtrasados[
+        'filtro_data'
+    ] = $filtroData;
+}
+
+
+if ($filtroBarbeiro) {
+
+    $parametrosAtrasados[
+        'filtro_barbeiro'
+    ] = $filtroBarbeiro;
+}
+
+
+if ($filtroCliente !== '') {
+
+    $parametrosAtrasados[
+        'filtro_cliente'
+    ] = $filtroCliente;
+}
+
+
+$linkAtrasados =
+    'agendamentos.php?'
+    . http_build_query(
+        $parametrosAtrasados
+    );
 
 ?>
 
@@ -621,6 +739,42 @@ require 'menu.php';
 
 </a>
 
+<a
+    href="<?= htmlspecialchars(
+        $linkAtrasados
+    ) ?>"
+    class="
+        card-resumo
+        card-status
+        card-atrasado
+        link-card-status
+        <?= $filtroAtrasado
+            ? 'status-ativo'
+            : ''
+        ?>
+    "
+>
+
+    <div class="icone-card">
+        ⚠
+    </div>
+
+    <div class="info-card">
+
+        <span>Atrasados</span>
+
+        <strong>
+            <?= $totalAtrasados ?>
+        </strong>
+
+        <small>
+            Confirmados fora do horário
+        </small>
+
+    </div>
+
+</a>
+
 </div>
 
 <!-- =========================================
@@ -665,7 +819,13 @@ $parametrosProfissional = [
     'filtro_barbeiro' => (int) $profissional['barb_id']
 ];
 
-if (
+if ($filtroAtrasado) {
+
+    $parametrosProfissional[
+        'filtro_atrasado'
+    ] = 1;
+
+} elseif (
     $filtroStatus !== '' &&
     in_array(
         $filtroStatus,
@@ -673,8 +833,10 @@ if (
         true
     )
 ) {
-    $parametrosProfissional['filtro_status'] =
-        $filtroStatus;
+
+    $parametrosProfissional[
+        'filtro_status'
+    ] = $filtroStatus;
 }
 
 if ($filtroCliente !== '') {
