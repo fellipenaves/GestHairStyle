@@ -26,13 +26,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         FILTER_VALIDATE_FLOAT
     );
 
+    $custoInformado = str_replace(
+    ',',
+    '.',
+    trim($_POST['custo'] ?? '')
+);
+
+$custo = filter_var(
+    $custoInformado,
+    FILTER_VALIDATE_FLOAT
+);
+
 
     if (
         $nome === '' ||
         !$duracao ||
         $duracao <= 0 ||
         $preco === false ||
-        $preco < 0
+        $preco < 0 ||
+        $custo === false ||
+        $custo < 0
     ) {
 
         $mensagem =
@@ -47,13 +60,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     serv_nome,
                     serv_descricao,
                     serv_duracao_min,
-                    serv_preco
+                    serv_preco,
+                    serv_custo
                 )
                 VALUES (
                     :nome,
                     :descricao,
                     :duracao,
-                    :preco
+                    :preco,
+                    :custo
                 )'
             );
 
@@ -67,7 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 ':duracao' => $duracao,
 
-                ':preco' => $preco
+                ':preco' => $preco,
+
+                ':custo' => $custo
             ]);
 
             header(
@@ -280,6 +297,32 @@ require 'menu.php';
 
                 </div>
 
+                <!-- CUSTO -->
+
+<div class="campo-formulario">
+
+    <label for="custo">
+        Custo estimado
+    </label>
+
+    <input
+        type="number"
+        id="custo"
+        name="custo"
+        min="0"
+        step="0.01"
+        placeholder="0,00"
+        value="<?= htmlspecialchars(
+            $_POST['custo'] ?? ''
+        ) ?>"
+        required
+    >
+
+    <small class="ajuda-campo">
+        Custo estimado para realizar o serviço.
+    </small>
+
+</div>
 
             </div>
 

@@ -4205,3 +4205,20 @@ button:focus-visible {
 .card-atrasado .info-card strong {
     color: #92400e;
 }
+
+/* =========================================
+   LUCRO DOS SERVIÇOS
+   ========================================= */
+
+.lucro-positivo {
+    color: #166534;
+
+    font-weight: 700;
+}
+
+
+.lucro-negativo {
+    color: #991b1b;
+
+    font-weight: 700;
+}

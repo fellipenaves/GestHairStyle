@@ -8,7 +8,8 @@ $consulta = $conexao->query(
         serv_nome,
         serv_descricao,
         serv_duracao_min,
-        serv_preco
+        serv_preco,
+        serv_custo
      FROM SERVICO
      ORDER BY serv_nome'
 );
@@ -18,6 +19,9 @@ $servicos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 $totalServicos = count($servicos);
 
 $precoMedio = 0;
+$custoMedio = 0;
+$lucroMedio = 0;
+$margemMedia = 0;
 $duracaoMedia = 0;
 
 if ($totalServicos > 0) {
@@ -26,12 +30,42 @@ if ($totalServicos > 0) {
         array_column($servicos, 'serv_preco')
     );
 
+    $somaCustos = array_sum(
+    array_column($servicos, 'serv_custo')
+);
+
+$somaLucros = 0;
+
+foreach ($servicos as $servicoCalculo) {
+
+    $somaLucros +=
+        (float) $servicoCalculo['serv_preco']
+        -
+        (float) $servicoCalculo['serv_custo'];
+}
+
     $somaDuracoes = array_sum(
         array_column($servicos, 'serv_duracao_min')
     );
 
-    $precoMedio = $somaPrecos / $totalServicos;
-    $duracaoMedia = $somaDuracoes / $totalServicos;
+    $precoMedio =
+    $somaPrecos / $totalServicos;
+
+$custoMedio =
+    $somaCustos / $totalServicos;
+
+$lucroMedio =
+    $somaLucros / $totalServicos;
+
+$duracaoMedia =
+    $somaDuracoes / $totalServicos;
+
+
+if ($somaPrecos > 0) {
+
+    $margemMedia =
+        ($somaLucros / $somaPrecos) * 100;
+}
 }
 
 ?>
@@ -137,6 +171,41 @@ require 'menu.php';
         </div>
     </div>
 
+    <div class="card-resumo">
+
+    <div class="icone-card">
+        📈
+    </div>
+
+    <div class="info-card">
+
+        <span>
+            Lucro médio estimado
+        </span>
+
+        <strong>
+            R$ <?= number_format(
+                $lucroMedio,
+                2,
+                ',',
+                '.'
+            ) ?>
+        </strong>
+
+        <small>
+            Margem média:
+            <?= number_format(
+                $margemMedia,
+                1,
+                ',',
+                '.'
+            ) ?>%
+        </small>
+
+    </div>
+
+</div>
+
 </div>
 
     <?php if (($_GET['status'] ?? '') === 'criado'): ?>
@@ -173,12 +242,22 @@ require 'menu.php';
                     <th>Descrição</th>
                     <th>Duração</th>
                     <th>Preço</th>
+                    <th>Custo</th>
+                    <th>Lucro estimado</th>
                     <th>Ações</th>
                 </tr>
             </thead>
 
             <tbody>
                 <?php foreach ($servicos as $servico): ?>
+                    <?php
+
+                    $lucroEstimado =
+                        (float) $servico['serv_preco']
+                        -
+                        (float) $servico['serv_custo'];
+
+                    ?>
                     <tr>
                         <td>
                             <?= htmlspecialchars($servico['serv_nome']) ?>
@@ -202,6 +281,30 @@ require 'menu.php';
                                 '.'
                             ) ?>
                         </td>
+
+                        <td>
+    R$ <?= number_format(
+        $servico['serv_custo'],
+        2,
+        ',',
+        '.'
+    ) ?>
+</td>
+
+
+<td
+    class="<?= $lucroEstimado >= 0
+        ? 'lucro-positivo'
+        : 'lucro-negativo'
+    ?>"
+>
+    R$ <?= number_format(
+        $lucroEstimado,
+        2,
+        ',',
+        '.'
+    ) ?>
+</td>
 
                         <td>
                             <a href="editar_servico.php?id=<?= (int) $servico['serv_id'] ?>">
@@ -231,7 +334,7 @@ require 'menu.php';
 
                 <?php if (count($servicos) === 0): ?>
                     <tr>
-                        <td colspan="5">
+                        <td colspan="7">
                             Nenhum serviço cadastrado.
                         </td>
                     </tr>
