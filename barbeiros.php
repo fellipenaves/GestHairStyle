@@ -3,7 +3,11 @@
 require_once 'conexao.php';
 
 $consulta = $conexao->query(
-    'SELECT barb_id, barb_nome, barb_telefone
+    'SELECT
+        barb_id,
+        barb_nome,
+        barb_telefone,
+        barb_comissao_percentual
      FROM BARBEIRO
      ORDER BY barb_nome'
 );
@@ -14,10 +18,41 @@ $totalBarbeiros = count($barbeiros);
 
 $barbeirosComTelefone = 0;
 
+$somaComissoes = 0;
+
+$comissaoMedia = 0;
+
+
 foreach ($barbeiros as $barbeiro) {
-    if (!empty(trim($barbeiro['barb_telefone'] ?? ''))) {
+
+    if (
+        !empty(
+            trim(
+                $barbeiro['barb_telefone']
+                ?? ''
+            )
+        )
+    ) {
+
         $barbeirosComTelefone++;
     }
+
+
+    $somaComissoes +=
+        (float) (
+            $barbeiro[
+                'barb_comissao_percentual'
+            ]
+            ?? 0
+        );
+}
+
+
+if ($totalBarbeiros > 0) {
+
+    $comissaoMedia =
+        $somaComissoes
+        / $totalBarbeiros;
 }
 
 $barbeirosComAgendamentos = $conexao
@@ -149,6 +184,35 @@ require 'menu.php';
 
     </div>
 
+    <div class="card-resumo">
+
+    <div class="icone-card">
+        %
+    </div>
+
+    <div class="info-card">
+
+        <span>
+            Comissão média
+        </span>
+
+        <strong>
+            <?= number_format(
+                $comissaoMedia,
+                1,
+                ',',
+                '.'
+            ) ?>%
+        </strong>
+
+        <small>
+            Média percentual da equipe
+        </small>
+
+    </div>
+
+    </div>
+
 </div>
 
     <?php if (($_GET['status'] ?? '') === 'criado'): ?>
@@ -183,6 +247,7 @@ require 'menu.php';
             <tr>
                 <th>Nome</th>
                 <th>Telefone</th>
+                <th>Comissão</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -198,6 +263,17 @@ require 'menu.php';
                         <?= htmlspecialchars(
                             $barbeiro['barb_telefone'] ?? 'Não informado'
                         ) ?>
+                    </td>
+
+                    <td>
+                        <?= number_format(
+                            $barbeiro[
+                                'barb_comissao_percentual'
+                            ],
+                            2,
+                            ',',
+                            '.'
+                        ) ?>%
                     </td>
 
                     <td>

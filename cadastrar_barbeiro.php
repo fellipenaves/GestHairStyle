@@ -12,10 +12,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_POST['telefone'] ?? ''
     );
 
-    if ($nome === '') {
+    $comissaoInformada = str_replace(
+        ',',
+        '.',
+        trim($_POST['comissao'] ?? '')
+    );
 
-        $mensagem =
-            'Informe o nome do barbeiro.';
+    $comissao = filter_var(
+        $comissaoInformada,
+        FILTER_VALIDATE_FLOAT
+    );
+
+    if (
+    $nome === '' ||
+    $comissao === false ||
+    $comissao < 0 ||
+    $comissao > 100
+) {
+
+    $mensagem =
+        'Informe corretamente o nome e a comissão do barbeiro.';
 
     } else {
 
@@ -24,11 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $comando = $conexao->prepare(
                 'INSERT INTO BARBEIRO (
                     barb_nome,
-                    barb_telefone
+                    barb_telefone,
+                    barb_comissao_percentual
                 )
                 VALUES (
                     :nome,
-                    :telefone
+                    :telefone,
+                    :comissao
                 )'
             );
 
@@ -39,7 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':telefone' =>
                     $telefone !== ''
                         ? $telefone
-                        : null
+                        : null,
+
+                ':comissao' => $comissao
 
             ]);
 
@@ -195,6 +215,35 @@ require 'menu.php';
                     </small>
 
                 </div>
+
+                <!-- COMISSÃO -->
+
+<div class="campo-formulario">
+
+    <label for="comissao">
+        Comissão
+    </label>
+
+    <input
+        type="number"
+        id="comissao"
+        name="comissao"
+        min="0"
+        max="100"
+        step="0.01"
+        placeholder="Ex.: 30"
+        value="<?= htmlspecialchars(
+            $_POST['comissao'] ?? ''
+        ) ?>"
+        required
+    >
+
+    <small class="ajuda-campo">
+        Percentual recebido pelo profissional.
+        Ex.: 30 = 30%.
+    </small>
+
+</div>
 
 
             </div>

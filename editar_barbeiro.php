@@ -21,7 +21,8 @@ $consulta = $conexao->prepare(
     'SELECT
         barb_id,
         barb_nome,
-        barb_telefone
+        barb_telefone,
+        barb_comissao_percentual
      FROM BARBEIRO
      WHERE barb_id = :id'
 );
@@ -51,16 +52,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = trim(
         $_POST['nome'] ?? ''
     );
-
     $telefone = trim(
         $_POST['telefone'] ?? ''
     );
 
+    $comissaoInformada = str_replace(
+        ',',
+        '.',
+        trim($_POST['comissao'] ?? '')
+    );
 
-    if ($nome === '') {
+    $comissao = filter_var(
+        $comissaoInformada,
+        FILTER_VALIDATE_FLOAT
+    );
+
+
+    if (
+        $nome === '' ||
+        $comissao === false ||
+        $comissao < 0 ||
+        $comissao > 100
+    ) {
 
         $mensagem =
-            'Informe o nome do barbeiro.';
+            'Informe corretamente o nome e a comissão do barbeiro.';
 
     } else {
 
@@ -71,7 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                  SET
                     barb_nome = :nome,
-                    barb_telefone = :telefone
+                    barb_telefone = :telefone,
+                    barb_comissao_percentual = :comissao
 
                  WHERE barb_id = :id'
             );
@@ -84,6 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $telefone !== ''
                         ? $telefone
                         : null,
+
+                ':comissao' => $comissao,
 
                 ':id' => $id
 
@@ -248,6 +267,37 @@ require 'menu.php';
 
 
             </div>
+
+            <!-- COMISSÃO -->
+
+<div class="campo-formulario">
+
+    <label for="comissao">
+        Comissão
+    </label>
+
+    <input
+        type="number"
+        id="comissao"
+        name="comissao"
+        min="0"
+        max="100"
+        step="0.01"
+        placeholder="Ex.: 30"
+        value="<?= htmlspecialchars(
+            $_POST['comissao']
+            ?? $barbeiro['barb_comissao_percentual']
+            ?? '0.00'
+        ) ?>"
+        required
+    >
+
+    <small class="ajuda-campo">
+        Percentual recebido pelo profissional.
+        Ex.: 30 = 30%.
+    </small>
+
+</div>
 
 
             <!-- AÇÕES -->
