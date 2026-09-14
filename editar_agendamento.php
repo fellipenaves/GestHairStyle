@@ -21,6 +21,8 @@ $consultaAgendamento = $conexao->prepare(
     'SELECT
         a.agend_id,
         a.agend_data_hora,
+        a.agend_comissao_percentual,
+        a.agend_comissao_valor,
         a.cli_id,
         a.barb_id,
         (
@@ -155,6 +157,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
             }
 
+            /* =========================================
+   COMISSÃO DO ATENDIMENTO
+   ========================================= */
+
+/*
+ * Mantém a comissão já registrada
+ * caso barbeiro e serviço não mudem.
+ */
+
+$comissaoPercentual =
+    (float) (
+        $agendamento[
+            'agend_comissao_percentual'
+        ]
+        ?? 0
+    );
+
+$comissaoValor =
+    (float) (
+        $agendamento[
+            'agend_comissao_valor'
+        ]
+        ?? 0
+    );
+
+
+$barbeiroFoiAlterado =
+    (int) $barbeiroId
+    !==
+    (int) $agendamento['barb_id'];
+
+$servicoFoiAlterado =
+    (int) $servicoId
+    !==
+    (int) $agendamento['serv_id'];
+
+
+/*
+ * Se trocar o barbeiro ou o serviço,
+ * recalcula a comissão.
+ */
+
+if (
+    $barbeiroFoiAlterado
+    ||
+    $servicoFoiAlterado
+) {
+
+    $consultaBarbeiro =
+        $conexao->prepare(
+            'SELECT
+                barb_comissao_percentual
+             FROM BARBEIRO
+             WHERE barb_id = :id'
+        );
+
+    $consultaBarbeiro->execute([
+        ':id' => $barbeiroId
+    ]);
+
+    $dadosBarbeiro =
+        $consultaBarbeiro->fetch(
+            PDO::FETCH_ASSOC
+        );
+
+
+    if (!$dadosBarbeiro) {
+
+        throw new Exception(
+            'Barbeiro não encontrado.'
+        );
+    }
+
+
+    $comissaoPercentual =
+        (float) (
+            $dadosBarbeiro[
+                'barb_comissao_percentual'
+            ]
+            ?? 0
+        );
+
+
+    $comissaoValor =
+        round(
+            (float) $servico['serv_preco']
+            *
+            ($comissaoPercentual / 100),
+            2
+        );
+}
 
             /* Valida data e horário */
 
@@ -314,6 +407,10 @@ if ($mensagem !== '') {
                             agend_data_hora = :data_hora,
                             agend_tempo_final = :tempo_final,
                             agend_preco = :preco,
+                            agend_comissao_percentual =
+                                :comissao_percentual,
+                            agend_comissao_valor =
+                                :comissao_valor,
                             cli_id = :cliente_id,
                             barb_id = :barbeiro_id
 
@@ -331,6 +428,12 @@ if ($mensagem !== '') {
 
                     ':preco' =>
                         $servico['serv_preco'],
+                    
+                    ':comissao_percentual' =>
+                        $comissaoPercentual,
+
+                    ':comissao_valor' =>
+                        $comissaoValor,
 
                     ':cliente_id' =>
                         $clienteId,

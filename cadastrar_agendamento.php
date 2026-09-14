@@ -123,7 +123,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'Serviço não encontrado.'
                 );
             }
+            
+            /* =========================================
+   BUSCA A COMISSÃO DO BARBEIRO
+   ========================================= */
 
+$consultaBarbeiro =
+    $conexao->prepare(
+        'SELECT
+            barb_comissao_percentual
+         FROM BARBEIRO
+         WHERE barb_id = :id'
+    );
+
+$consultaBarbeiro->execute([
+    ':id' => $barbeiroId
+]);
+
+$dadosBarbeiro =
+    $consultaBarbeiro->fetch(
+        PDO::FETCH_ASSOC
+    );
+
+
+if (!$dadosBarbeiro) {
+
+    throw new Exception(
+        'Barbeiro não encontrado.'
+    );
+}
+
+
+/* Calcula a comissão do atendimento */
+
+$precoAgendamento =
+    (float) $servico['serv_preco'];
+
+$comissaoPercentual =
+    (float) (
+        $dadosBarbeiro[
+            'barb_comissao_percentual'
+        ]
+        ?? 0
+    );
+
+$comissaoValor =
+    round(
+        $precoAgendamento
+        *
+        ($comissaoPercentual / 100),
+        2
+    );
 
             /* Converte data e horário */
 
@@ -269,6 +319,8 @@ if ($horarioFinal > '21:00') {
                             agend_status,
                             agend_tempo_final,
                             agend_preco,
+                            agend_comissao_percentual,
+                            agend_comissao_valor,
                             cli_id,
                             barb_id
 
@@ -280,6 +332,8 @@ if ($horarioFinal > '21:00') {
                             'pendente',
                             :tempo_final,
                             :preco,
+                            :comissao_percentual,
+                            :comissao_valor,
                             :cliente_id,
                             :barbeiro_id
 
@@ -296,7 +350,13 @@ if ($horarioFinal > '21:00') {
                         $tempoFinal,
 
                     ':preco' =>
-                        $servico['serv_preco'],
+                        $precoAgendamento,
+
+                    ':comissao_percentual' =>
+                        $comissaoPercentual,
+
+                    ':comissao_valor' =>
+                        $comissaoValor,
 
                     ':cliente_id' =>
                         $clienteId,
