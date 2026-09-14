@@ -57,6 +57,79 @@ $faturamentoMes = $conexao
     ->query($sqlFaturamento)
     ->fetchColumn();
 
+/* =========================================
+   CUSTOS DOS SERVIÇOS DO MÊS
+   Apenas atendimentos concluídos
+   ========================================= */
+
+$sqlCustosServicos = "
+    SELECT
+        COALESCE(
+            SUM(ags.agenser_custo),
+            0
+        )
+
+    FROM AGENDAMENTO AS a
+
+    INNER JOIN AGENDAMENTO_SERVICO AS ags
+        ON ags.agend_id = a.agend_id
+
+    WHERE a.agend_status = 'concluido'
+
+      AND YEAR(a.agend_data_hora)
+          = YEAR(CURDATE())
+
+      AND MONTH(a.agend_data_hora)
+          = MONTH(CURDATE())
+";
+
+$custosServicosMes =
+    (float) $conexao
+        ->query($sqlCustosServicos)
+        ->fetchColumn();
+
+
+/* =========================================
+   COMISSÕES DOS BARBEIROS DO MÊS
+   Apenas atendimentos concluídos
+   ========================================= */
+
+$sqlComissoes = "
+    SELECT
+        COALESCE(
+            SUM(agend_comissao_valor),
+            0
+        )
+
+    FROM AGENDAMENTO
+
+    WHERE agend_status = 'concluido'
+
+      AND YEAR(agend_data_hora)
+          = YEAR(CURDATE())
+
+      AND MONTH(agend_data_hora)
+          = MONTH(CURDATE())
+";
+
+$comissoesMes =
+    (float) $conexao
+        ->query($sqlComissoes)
+        ->fetchColumn();
+
+
+/* =========================================
+   RESULTADO DOS ATENDIMENTOS DO MÊS
+
+   Faturamento
+   - custos dos serviços
+   - comissões
+   ========================================= */
+
+$resultadoAtendimentosMes =
+    (float) $faturamentoMes
+    - $custosServicosMes
+    - $comissoesMes;
 
 /* =========================================
    TICKET MÉDIO DO MÊS
@@ -467,6 +540,95 @@ require 'menu.php';
                 Total de clientes cadastrados
             </small>
         </div>
+    </div>
+
+    <div class="card-resumo">
+
+        <div class="icone-card">
+        🧾
+        </div>
+
+        <div class="info-card">
+
+            <span>
+                Custos dos serviços
+            </span>
+
+            <strong>
+                R$ <?= number_format(
+                    $custosServicosMes,
+                    2,
+                    ',',
+                    '.'
+                ) ?>
+            </strong>
+
+            <small>
+                Custos dos atendimentos concluídos no mês
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-resumo">
+
+        <div class="icone-card">
+            %
+        </div>
+
+        <div class="info-card">
+
+            <span>
+                Comissões do mês
+            </span>
+
+            <strong>
+                R$ <?= number_format(
+                    $comissoesMes,
+                    2,
+                    ',',
+                    '.'
+                ) ?>
+            </strong>
+
+            <small>
+                Comissões dos atendimentos concluídos
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-resumo">
+
+        <div class="icone-card">
+            📈
+        </div>
+
+        <div class="info-card">
+
+            <span>
+                Resultado dos atendimentos
+            </span>
+
+            <strong>
+                R$ <?= number_format(
+                    $resultadoAtendimentosMes,
+                    2,
+                    ',',
+                    '.'
+                ) ?>
+            </strong>
+
+            <small>
+                Faturamento menos custos e comissões
+            </small>
+
+        </div>
+
     </div>
 
 </div>
