@@ -103,9 +103,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $conexao->prepare(
                     'SELECT
                         serv_preco,
+                        serv_custo,
                         serv_duracao_min
-                     FROM SERVICO
-                     WHERE serv_id = :id'
+                    FROM SERVICO
+                    WHERE serv_id = :id'
                 );
 
             $consultaServico->execute([
@@ -378,6 +379,7 @@ if ($horarioFinal > '21:00') {
                         'INSERT INTO AGENDAMENTO_SERVICO (
 
                             agenser_preco,
+                            agenser_custo,
                             agend_id,
                             serv_id
 
@@ -386,6 +388,7 @@ if ($horarioFinal > '21:00') {
                         VALUES (
 
                             :preco,
+                            :custo,
                             :agendamento_id,
                             :servico_id
 
@@ -397,6 +400,9 @@ if ($horarioFinal > '21:00') {
 
                     ':preco' =>
                         $servico['serv_preco'],
+                    
+                    ':custo' =>
+                        $servico['serv_custo'],
 
                     ':agendamento_id' =>
                         $agendamentoId,

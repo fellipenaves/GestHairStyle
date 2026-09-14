@@ -31,7 +31,15 @@ $consultaAgendamento = $conexao->prepare(
             WHERE ags.agend_id = a.agend_id
             ORDER BY ags.serv_id
             LIMIT 1
-        ) AS serv_id
+        ) AS serv_id,
+
+        (
+            SELECT ags.agenser_custo
+            FROM AGENDAMENTO_SERVICO AS ags
+            WHERE ags.agend_id = a.agend_id
+            ORDER BY ags.serv_id
+            LIMIT 1
+) AS agenser_custo
      FROM AGENDAMENTO AS a
      WHERE a.agend_id = :id'
 );
@@ -136,9 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $conexao->prepare(
                     'SELECT
                         serv_preco,
+                        serv_custo,
                         serv_duracao_min
-                     FROM SERVICO
-                     WHERE serv_id = :id'
+                    FROM SERVICO
+                    WHERE serv_id = :id'
                 );
 
             $consultaServico->execute([
@@ -192,6 +201,22 @@ $servicoFoiAlterado =
     (int) $servicoId
     !==
     (int) $agendamento['serv_id'];
+
+    $custoServicoAgendamento =
+    (float) (
+        $agendamento['agenser_custo']
+        ?? 0
+    );
+
+
+if ($servicoFoiAlterado) {
+
+    $custoServicoAgendamento =
+        (float) (
+            $servico['serv_custo']
+            ?? 0
+        );
+}
 
 
 /*
@@ -468,6 +493,7 @@ if ($mensagem !== '') {
                         'INSERT INTO AGENDAMENTO_SERVICO (
 
                             agenser_preco,
+                            agenser_custo,
                             agend_id,
                             serv_id
 
@@ -476,6 +502,7 @@ if ($mensagem !== '') {
                         VALUES (
 
                             :preco,
+                            :custo,
                             :agendamento_id,
                             :servico_id
 
@@ -487,6 +514,9 @@ if ($mensagem !== '') {
 
                     ':preco' =>
                         $servico['serv_preco'],
+
+                    ':custo' =>
+                        $custoServicoAgendamento,
 
                     ':agendamento_id' =>
                         $id,
