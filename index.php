@@ -132,6 +132,42 @@ $resultadoAtendimentosMes =
     - $comissoesMes;
 
 /* =========================================
+   DESPESAS GERAIS PAGAS NO MÊS
+   ========================================= */
+
+$sqlDespesasMes = "
+    SELECT
+        COALESCE(
+            SUM(desp_valor),
+            0
+        )
+
+    FROM DESPESA
+
+    WHERE desp_status = 'pago'
+
+      AND YEAR(desp_data)
+          = YEAR(CURDATE())
+
+      AND MONTH(desp_data)
+          = MONTH(CURDATE())
+";
+
+$despesasPagasMes =
+    (float) $conexao
+        ->query($sqlDespesasMes)
+        ->fetchColumn();
+
+
+/* =========================================
+   RESULTADO LÍQUIDO DO MÊS
+   ========================================= */
+
+$resultadoLiquidoMes =
+    $resultadoAtendimentosMes
+    - $despesasPagasMes;
+
+/* =========================================
    TICKET MÉDIO DO MÊS
    ========================================= */
 
@@ -625,6 +661,65 @@ require 'menu.php';
 
             <small>
                 Faturamento menos custos e comissões
+            </small>
+
+        </div>
+
+    </div>
+
+    <div class="card-resumo">
+
+    <div class="icone-card">
+        💸
+    </div>
+
+    <div class="info-card">
+
+        <span>
+            Despesas gerais pagas
+        </span>
+
+        <strong>
+            R$ <?= number_format(
+                $despesasPagasMes,
+                2,
+                ',',
+                '.'
+            ) ?>
+        </strong>
+
+        <small>
+            Despesas pagas no mês
+        </small>
+
+    </div>
+
+</div>
+
+
+    <div class="card-resumo">
+
+        <div class="icone-card">
+            💵
+        </div>
+
+        <div class="info-card">
+
+            <span>
+                Resultado líquido do mês
+            </span>
+
+            <strong>
+                R$ <?= number_format(
+                    $resultadoLiquidoMes,
+                    2,
+                    ',',
+                    '.'
+                ) ?>
+            </strong>
+
+            <small>
+                Após custos, comissões e despesas pagas
             </small>
 
         </div>
