@@ -4,22 +4,152 @@ require_once 'conexao.php';
 
 
 /* =========================================
-   LISTA DE DESPESAS
+   FILTROS
    ========================================= */
 
-$consultaDespesas =
-    $conexao->query(
-        "SELECT
-            desp_id,
-            desp_descricao,
-            desp_categoria,
-            desp_valor,
+$filtroMes = trim(
+    $_GET['mes'] ?? ''
+);
+
+$filtroCategoria = trim(
+    $_GET['categoria'] ?? ''
+);
+
+$filtroStatus = trim(
+    $_GET['filtro_status'] ?? ''
+);
+
+
+$categorias = [
+    'Estrutura',
+    'Utilidades',
+    'Materiais',
+    'Limpeza',
+    'Marketing',
+    'Manutenção',
+    'Impostos',
+    'Outros'
+];
+
+
+/* =========================================
+   CONDIÇÕES DOS FILTROS
+   ========================================= */
+
+$condicoes = [];
+
+$parametros = [];
+
+
+/* Filtro por mês */
+
+if (
+    $filtroMes !== ''
+    &&
+    preg_match(
+        '/^\d{4}-\d{2}$/',
+        $filtroMes
+    )
+) {
+
+    $condicoes[] =
+        "DATE_FORMAT(
             desp_data,
-            desp_status,
-            desp_observacao
-         FROM DESPESA
-         ORDER BY desp_data DESC, desp_id DESC"
+            '%Y-%m'
+        ) = :mes";
+
+    $parametros[':mes'] =
+        $filtroMes;
+}
+
+
+/* Filtro por categoria */
+
+if (
+    $filtroCategoria !== ''
+    &&
+    in_array(
+        $filtroCategoria,
+        $categorias,
+        true
+    )
+) {
+
+    $condicoes[] =
+        'desp_categoria = :categoria';
+
+    $parametros[':categoria'] =
+        $filtroCategoria;
+}
+
+
+/* Filtro por status */
+
+if (
+    in_array(
+        $filtroStatus,
+        [
+            'pago',
+            'pendente'
+        ],
+        true
+    )
+) {
+
+    $condicoes[] =
+        'desp_status = :status';
+
+    $parametros[':status'] =
+        $filtroStatus;
+}
+
+
+/* =========================================
+   BUSCA DAS DESPESAS
+   ========================================= */
+
+$sqlDespesas = "
+    SELECT
+        desp_id,
+        desp_descricao,
+        desp_categoria,
+        desp_valor,
+        desp_data,
+        desp_status,
+        desp_observacao
+
+    FROM DESPESA
+";
+
+
+if (!empty($condicoes)) {
+
+    $sqlDespesas .=
+        ' WHERE '
+        . implode(
+            ' AND ',
+            $condicoes
+        );
+}
+
+
+$sqlDespesas .= "
+    ORDER BY
+        desp_data DESC,
+        desp_id DESC
+";
+
+
+$consultaDespesas =
+    $conexao->prepare(
+        $sqlDespesas
     );
+
+
+$consultaDespesas->execute(
+    $parametros
+);
+
 
 $despesas =
     $consultaDespesas->fetchAll(
@@ -28,39 +158,39 @@ $despesas =
 
 
 /* =========================================
-   TOTAL PAGO NO MÊS
+   TOTAIS DOS RESULTADOS FILTRADOS
    ========================================= */
 
-$sqlPagoMes = "
-    SELECT COALESCE(SUM(desp_valor), 0)
-    FROM DESPESA
-    WHERE desp_status = 'pago'
-      AND YEAR(desp_data) = YEAR(CURDATE())
-      AND MONTH(desp_data) = MONTH(CURDATE())
-";
+$totalPagoFiltrado = 0;
 
-$totalPagoMes =
-    (float) $conexao
-        ->query($sqlPagoMes)
-        ->fetchColumn();
+$totalPendenteFiltrado = 0;
 
 
-/* =========================================
-   TOTAL PENDENTE NO MÊS
-   ========================================= */
+foreach ($despesas as $despesa) {
 
-$sqlPendenteMes = "
-    SELECT COALESCE(SUM(desp_valor), 0)
-    FROM DESPESA
-    WHERE desp_status = 'pendente'
-      AND YEAR(desp_data) = YEAR(CURDATE())
-      AND MONTH(desp_data) = MONTH(CURDATE())
-";
+    $valor =
+        (float) $despesa['desp_valor'];
 
-$totalPendenteMes =
-    (float) $conexao
-        ->query($sqlPendenteMes)
-        ->fetchColumn();
+
+    if (
+        $despesa['desp_status']
+        === 'pago'
+    ) {
+
+        $totalPagoFiltrado +=
+            $valor;
+    }
+
+
+    if (
+        $despesa['desp_status']
+        === 'pendente'
+    ) {
+
+        $totalPendenteFiltrado +=
+            $valor;
+    }
+}
 
 
 $totalDespesas =
@@ -87,7 +217,7 @@ $totalDespesas =
 
     <link
         rel="stylesheet"
-        href="style.css"
+        href="style.css?v=<?= filemtime('style.css') ?>"
     >
 
 </head>
@@ -161,6 +291,133 @@ require 'menu.php';
 
 <?php endif; ?>
 
+<!-- FILTROS -->
+
+<form
+    method="GET"
+    class="card-formulario filtros-despesas"
+>
+
+    <div class="grid-formulario">
+
+        <div class="campo-formulario">
+
+            <label for="mes">
+                Mês
+            </label>
+
+            <input
+                type="month"
+                id="mes"
+                name="mes"
+                value="<?= htmlspecialchars(
+                    $filtroMes
+                ) ?>"
+            >
+
+        </div>
+
+
+        <div class="campo-formulario">
+
+            <label for="categoria">
+                Categoria
+            </label>
+
+            <select
+                id="categoria"
+                name="categoria"
+            >
+
+                <option value="">
+                    Todas as categorias
+                </option>
+
+                <?php foreach (
+                    $categorias as $categoria
+                ): ?>
+
+                    <option
+                        value="<?= htmlspecialchars(
+                            $categoria
+                        ) ?>"
+                        <?= (
+                            $filtroCategoria
+                            === $categoria
+                        ) ? 'selected' : '' ?>
+                    >
+                        <?= htmlspecialchars(
+                            $categoria
+                        ) ?>
+                    </option>
+
+                <?php endforeach; ?>
+
+            </select>
+
+        </div>
+
+
+        <div class="campo-formulario">
+
+            <label for="filtro_status">
+                Status
+            </label>
+
+            <select
+                id="filtro_status"
+                name="filtro_status"
+            >
+
+                <option value="">
+                    Todos
+                </option>
+
+                <option
+                    value="pago"
+                    <?= (
+                        $filtroStatus === 'pago'
+                    ) ? 'selected' : '' ?>
+                >
+                    Pago
+                </option>
+
+                <option
+                    value="pendente"
+                    <?= (
+                        $filtroStatus === 'pendente'
+                    ) ? 'selected' : '' ?>
+                >
+                    Pendente
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="acoes-formulario">
+
+        <a
+            href="despesas.php"
+            class="botao-secundario"
+        >
+            Limpar filtros
+        </a>
+
+        <button
+            type="submit"
+            class="botao-destaque"
+        >
+            Filtrar
+        </button>
+
+    </div>
+
+</form>
+
     <!-- RESUMO -->
 
     <div class="grid-resumo">
@@ -174,12 +431,12 @@ require 'menu.php';
             <div class="info-card">
 
                 <span>
-                    Despesas pagas no mês
+                    Despesas pagas
                 </span>
 
                 <strong>
                     R$ <?= number_format(
-                        $totalPagoMes,
+                        $totalPagoFiltrado,
                         2,
                         ',',
                         '.'
@@ -187,7 +444,7 @@ require 'menu.php';
                 </strong>
 
                 <small>
-                    Valores já pagos neste mês
+                    Valores pagos no período filtrado
                 </small>
 
             </div>
@@ -209,7 +466,7 @@ require 'menu.php';
 
                 <strong>
                     R$ <?= number_format(
-                        $totalPendenteMes,
+                        $totalPendenteFiltrado,
                         2,
                         ',',
                         '.'
@@ -217,7 +474,7 @@ require 'menu.php';
                 </strong>
 
                 <small>
-                    Valores pendentes neste mês
+                    Valores pendentes no período filtrado
                 </small>
 
             </div>
@@ -242,7 +499,7 @@ require 'menu.php';
                 </strong>
 
                 <small>
-                    Total de despesas cadastradas
+                    Total de registros encontrados
                 </small>
 
             </div>

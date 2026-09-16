@@ -4230,3 +4230,7 @@ button:focus-visible {
 .info-card strong.valor-negativo {
     color: #dc3545;
 }
+
+.filtros-despesas {
+    margin-bottom: 30px;
+}
