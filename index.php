@@ -453,7 +453,10 @@ $faturamentoHoje =
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GestHairStyle</title>
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css?v=<?= filemtime('style.css') ?>"
+    >
 </head>
 
 <body>
@@ -709,7 +712,12 @@ require 'menu.php';
                 Resultado líquido do mês
             </span>
 
-            <strong>
+            <strong
+                class="<?= $resultadoLiquidoMes >= 0
+                    ? 'valor-positivo'
+                    : 'valor-negativo'
+                ?>"
+            >
                 R$ <?= number_format(
                     $resultadoLiquidoMes,
                     2,

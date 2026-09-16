@@ -4222,3 +4222,11 @@ button:focus-visible {
 
     font-weight: 700;
 }
+
+.info-card strong.valor-positivo {
+    color: #198754;
+}
+
+.info-card strong.valor-negativo {
+    color: #dc3545;
+}
