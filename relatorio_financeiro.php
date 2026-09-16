@@ -301,6 +301,84 @@ $resultadoLiquido =
     $resultadoAtendimentos
     - $despesasPagas;
 
+/* =========================================
+   DESEMPENHO POR BARBEIRO
+   ========================================= */
+
+$consultaBarbeiros =
+    $conexao->prepare(
+        "SELECT
+            b.barb_id,
+            b.barb_nome,
+
+            COUNT(a.agend_id) AS atendimentos,
+
+            COALESCE(
+                SUM(a.agend_preco),
+                0
+            ) AS faturamento,
+
+            COALESCE(
+                SUM(a.agend_comissao_valor),
+                0
+            ) AS comissoes,
+
+            COALESCE(
+                SUM(
+                    (
+                        SELECT
+                            COALESCE(
+                                SUM(ags.agenser_custo),
+                                0
+                            )
+
+                        FROM AGENDAMENTO_SERVICO AS ags
+
+                        WHERE ags.agend_id =
+                            a.agend_id
+                    )
+                ),
+                0
+            ) AS custos
+
+         FROM AGENDAMENTO AS a
+
+         INNER JOIN BARBEIRO AS b
+            ON b.barb_id = a.barb_id
+
+         WHERE
+            a.agend_status = 'concluido'
+
+            AND a.agend_data_hora >= :inicio
+
+            AND a.agend_data_hora < :fim
+
+         GROUP BY
+            b.barb_id,
+            b.barb_nome
+
+         ORDER BY
+            faturamento DESC,
+            b.barb_nome ASC"
+    );
+
+
+$consultaBarbeiros->execute([
+
+    ':inicio' =>
+        $inicioMes,
+
+    ':fim' =>
+        $fimMes
+
+]);
+
+
+$desempenhoBarbeiros =
+    $consultaBarbeiros->fetchAll(
+        PDO::FETCH_ASSOC
+    );
+
 
 /* =========================================
    GRÁFICO FINANCEIRO
@@ -989,7 +1067,6 @@ require 'menu.php';
 
     </div>
 
-
     <!-- =====================================
          GRÁFICO FINANCEIRO
          ===================================== -->
@@ -1231,6 +1308,210 @@ $alturaResultadoCss =
 
     </div>
 
+    <!-- =====================================
+     DESEMPENHO POR BARBEIRO
+     ===================================== -->
+
+<div
+    class="
+        card-gerencial
+        relatorio-grafico
+    "
+>
+
+    <div class="cabecalho-card-gerencial">
+
+        <div>
+
+            <span class="subtitulo-dashboard">
+                EQUIPE
+            </span>
+
+            <h2>
+                Desempenho por barbeiro
+            </h2>
+
+            <p>
+                Resultados dos atendimentos
+                concluídos no mês selecionado.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Profissional</th>
+
+                    <th>Atendimentos</th>
+
+                    <th>Faturamento</th>
+
+                    <th>Custos</th>
+
+                    <th>Comissões</th>
+
+                    <th>Resultado</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <?php if (
+                    count(
+                        $desempenhoBarbeiros
+                    ) > 0
+                ): ?>
+
+
+                    <?php foreach (
+                        $desempenhoBarbeiros
+                        as $barbeiro
+                    ): ?>
+
+
+                        <?php
+
+                        $resultadoBarbeiro =
+                            (float)
+                            $barbeiro[
+                                'faturamento'
+                            ]
+                            -
+                            (float)
+                            $barbeiro[
+                                'custos'
+                            ]
+                            -
+                            (float)
+                            $barbeiro[
+                                'comissoes'
+                            ];
+
+                        ?>
+
+
+                        <tr>
+
+                            <td>
+                                <?= htmlspecialchars(
+                                    $barbeiro[
+                                        'barb_nome'
+                                    ]
+                                ) ?>
+                            </td>
+
+
+                            <td>
+                                <?= (int)
+                                    $barbeiro[
+                                        'atendimentos'
+                                    ]
+                                ?>
+                            </td>
+
+
+                            <td>
+                                R$ <?= number_format(
+                                    $barbeiro[
+                                        'faturamento'
+                                    ],
+                                    2,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </td>
+
+
+                            <td>
+                                R$ <?= number_format(
+                                    $barbeiro[
+                                        'custos'
+                                    ],
+                                    2,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </td>
+
+
+                            <td>
+                                R$ <?= number_format(
+                                    $barbeiro[
+                                        'comissoes'
+                                    ],
+                                    2,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </td>
+
+
+                            <td>
+
+                                <strong
+                                    class="<?= $resultadoBarbeiro
+                                        >= 0
+                                            ? 'valor-positivo'
+                                            : 'valor-negativo'
+                                    ?>"
+                                >
+
+                                    R$ <?= number_format(
+                                        $resultadoBarbeiro,
+                                        2,
+                                        ',',
+                                        '.'
+                                    ) ?>
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+
+                    <?php endforeach; ?>
+
+
+                <?php else: ?>
+
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            style="
+                                text-align: center;
+                            "
+                        >
+                            Nenhum atendimento
+                            concluído neste mês.
+                        </td>
+
+                    </tr>
+
+
+                <?php endif; ?>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
 
 </div>
 
