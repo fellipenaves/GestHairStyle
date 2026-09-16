@@ -4234,3 +4234,115 @@ button:focus-visible {
 .filtros-despesas {
     margin-bottom: 30px;
 }
+
+/* =========================================
+   RELATÓRIO FINANCEIRO
+   ========================================= */
+
+.relatorio-grafico {
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.legenda-financeira {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    margin-bottom: 30px;
+}
+
+.legenda-financeira span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.legenda-financeira i {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legenda-faturamento {
+    background: #c99b3c;
+}
+
+.legenda-despesas {
+    background: #dc3545;
+}
+
+.legenda-resultado {
+    background: #198754;
+}
+
+.grafico-financeiro {
+    display: grid;
+    grid-template-columns:
+        repeat(6, minmax(100px, 1fr));
+    gap: 20px;
+    align-items: end;
+    min-height: 320px;
+    overflow-x: auto;
+    padding-top: 10px;
+}
+
+.grupo-financeiro {
+    min-width: 100px;
+    text-align: center;
+}
+
+.barras-financeiras {
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 7px;
+    border-bottom: 1px solid #dddddd;
+    padding: 0 8px;
+}
+
+.barra-financeira {
+    width: 22px;
+    border-radius: 6px 6px 0 0;
+    transition: transform 0.2s ease;
+}
+
+.barra-financeira:hover {
+    transform: scaleX(1.12);
+}
+
+.barra-financeira-faturamento {
+    background: #c99b3c;
+}
+
+.barra-financeira-despesas {
+    background: #dc3545;
+}
+
+.barra-financeira-resultado {
+    background: #198754;
+}
+
+.barra-financeira-resultado.resultado-negativo {
+    background: #8b1e2d;
+}
+
+.grupo-financeiro strong {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+
+    .grafico-financeiro {
+        grid-template-columns:
+            repeat(6, 110px);
+    }
+
+}

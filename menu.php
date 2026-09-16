@@ -69,6 +69,14 @@ $paginaAtual = $paginaAtual ?? '';
                 <span class="menu-icone">💸</span>
                     Despesas
                 </a>
+        
+        <a
+            href="relatorio_financeiro.php"
+            class="<?= $paginaAtual === 'relatorio_financeiro' ? 'ativo' : '' ?>"
+        >
+            <span class="menu-icone">📊</span>
+                Relatórios
+        </a>
 
     </div>
 
